@@ -1,9 +1,12 @@
-#foreach( $problem in $problems )
+#foreach( $problem in $problemSet.problems )
 <div>
     <h1>$problem.title</h1>
     <p>$problem.description</p>
-    <form action="/submit/$problem.id" method="post" enctype="multipart/form-data">
-        <input type="file" name="source-$problem.id">
+    #set( $id = $problemSet.getId($problem))
+    <form action="/submit/$id" method="post" enctype="multipart/form-data">
+        name <input type="text" name="name">
+        <br>
+        <input type="file" name="source-$id">
         <input type="submit" value="Upload" name="submit">
     </form>
 </div>
