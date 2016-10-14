@@ -17,7 +17,9 @@ public class BojServer {
   void start() {
     port(8080);
     threadPool(Runtime.getRuntime().availableProcessors());
-    get("/", new IndexRoute(problemSet), new VelocityTemplateEngine());
+    get("/", new IndexRoute(), new VelocityTemplateEngine());
+    before("/*", new AuthenticationFilter());
+    get("/problems", new ProblemsRoute(problemSet), new VelocityTemplateEngine());
     post("/submit/:id", new SubmitRoute(testRunner, problemSet),  new VelocityTemplateEngine());
   }
 }

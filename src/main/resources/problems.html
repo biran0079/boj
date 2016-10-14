@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="google-signin-client_id" content="496017852143-19a6kjh7mvhlhb0pp4l5fsj5s5empgt8.apps.googleusercontent.com">
+    <script>
+        function signOut() {
+            var auth2 = gapi.auth2.getAuthInstance();
+            auth2.signOut().then(function () {
+              window.location.href = '/';
+            });
+        }
+
+        function onLoad() {
+          gapi.load('auth2', function() {
+            gapi.auth2.init();
+          });
+        }
+    </script>
+    <script src="https://apis.google.com/js/platform.js?onload=onLoad" async defer></script>
+    <title>Problems</title>
+</head>
+<body>
+#foreach( $problem in $problemSet.problems )
+<div>
+    <h1>$problem.title</h1>
+    <p>$problem.description</p>
+    #set( $id = $problemSet.getId($problem))
+    <form action="/submit/$id" method="post" enctype="multipart/form-data">
+        name <input type="text" name="name">
+        <br>
+        <input type="file" name="source-$id">
+        <input type="submit" value="Upload" name="submit">
+    </form>
+</div>
+#end
+<a href="#" onclick="signOut();">Sign out</a>
+</body>
+</html>
