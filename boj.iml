@@ -7,10 +7,18 @@
       <sourceFolder url="file://$MODULE_DIR$/src/main/java" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/main/resources" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/test/java" isTestSource="true" />
-      <excludeFolder url="file://$MODULE_DIR$/target" />
+      <sourceFolder url="file://$MODULE_DIR$/target/generated-sources/jooq" isTestSource="false" generated="true" />
+      <excludeFolder url="file://$MODULE_DIR$/target/classes" />
+      <excludeFolder url="file://$MODULE_DIR$/target/maven-archiver" />
+      <excludeFolder url="file://$MODULE_DIR$/target/maven-status" />
+      <excludeFolder url="file://$MODULE_DIR$/target/site" />
+      <excludeFolder url="file://$MODULE_DIR$/target/surefire" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="Maven: org.jooq:jooq:3.8.4" level="project" />
+    <orderEntry type="library" name="Maven: org.jooq:jooq-meta:3.8.4" level="project" />
+    <orderEntry type="library" name="Maven: org.jooq:jooq-codegen:3.8.4" level="project" />
     <orderEntry type="library" name="Maven: com.google.api-client:google-api-client:1.22.0" level="project" />
     <orderEntry type="library" name="Maven: com.google.oauth-client:google-oauth-client:1.22.0" level="project" />
     <orderEntry type="library" name="Maven: com.google.http-client:google-http-client:1.22.0" level="project" />
