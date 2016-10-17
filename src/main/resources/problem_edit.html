@@ -1,0 +1,12 @@
+<form action="/problem" method="POST" id="problem_form">
+    Title:<br>
+    <input type="text" name="title" value="$!problem.title"><br>
+    <input type="hidden" name="id" value="$!problem.id">
+</form>
+Description:<br>
+<textarea rows="50" cols="80" name="description" form="problem_form">$!problem.description</textarea><br>
+Template:<br>
+<textarea rows="50" cols="80" name="template" form="problem_form">$!problem.template_src</textarea><br>
+Test:<br>
+<textarea rows="50" cols="80" name="test" form="problem_form">$!test.junit_test_src</textarea><br>
+<input type="submit" value="$button" form="problem_form">
