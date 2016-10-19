@@ -1,12 +1,13 @@
 package com.boj;
 
+import com.boj.annotation.CheckstyleConfigPath;
+import com.boj.annotation.CheckstyleJarPath;
 import com.boj.annotation.IsAdmin;
 import com.boj.annotation.JunitClassPath;
 import com.boj.guice.RequestScopeModule;
 import com.boj.jooq.tables.records.UserRecord;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
-import com.google.inject.ProvisionException;
 import com.google.inject.servlet.RequestScoped;
 import org.flywaydb.core.Flyway;
 import org.jooq.DSLContext;
@@ -29,6 +30,21 @@ public class BojServerModule extends AbstractModule {
   protected void configure() {
     install(new RequestScopeModule());
     bind(UserRecord.class).in(RequestScoped.class);
+    bindConstant().annotatedWith(JunitClassPath.class)
+        .to(getPath("./junit-4.12.jar") + ":"
+            + getPath("./hamcrest-core-1.3.jar"));
+    bindConstant().annotatedWith(CheckstyleJarPath.class)
+        .to(getPath("./checkstyle-7.1.2-all.jar"));
+    bindConstant().annotatedWith(CheckstyleConfigPath.class)
+        .to(getPath("./boj_check.xml"));
+  }
+
+  private static final String getPath(String relativePath) {
+    File file = new File(relativePath);
+    if (!file.exists()) {
+      throw new RuntimeException("file " + relativePath + " not found");
+    }
+    return file.getAbsolutePath();
   }
 
   @Provides
@@ -36,18 +52,6 @@ public class BojServerModule extends AbstractModule {
   @IsAdmin
   boolean providesIsAdmin(UserRecord userRecord) {
     return userRecord.getEmail().equals("biran0079@gmail.com");
-  }
-
-  @Provides
-  @Singleton
-  @JunitClassPath
-  String providesJunitClassPath() {
-    File junit = new File("./junit-4.12.jar");
-    File hamcrest = new File("./hamcrest-core-1.3.jar");
-    if (!junit.exists() || !hamcrest.exists()) {
-      throw new ProvisionException("junit or hamcrest not found");
-    }
-    return junit.getAbsolutePath() + ":" + hamcrest.getAbsolutePath();
   }
 
   @Provides
@@ -67,7 +71,7 @@ public class BojServerModule extends AbstractModule {
 
   @Provides
   @Singleton
-  DSLContext providesDSL(Connection con) {
+  DSLContext providesDslContext(Connection con) {
     return DSL.using(con, SQLDialect.SQLITE);
   }
 }

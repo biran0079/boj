@@ -1,6 +1,13 @@
 {% extends "base.html" %}
 
 {% block content %}
+{% if verdict == "PENDING" %}
+<script>
+    setTimeout(function() {
+        location.reload();
+    }, 1000);
+</script>
+{% endif %}
 <h1>{{verdict}}</h1>
 <pre>{{message}}</pre><br>
 Source<br>

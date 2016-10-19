@@ -1,6 +1,5 @@
 package com.boj.filter;
 
-import com.boj.guice.RequestScope;
 import com.boj.user.UserAuthenticator;
 import com.google.common.collect.ImmutableSet;
 import com.google.inject.Inject;

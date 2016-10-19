@@ -1,5 +1,7 @@
 package com.boj.judge;
 
+import com.boj.annotation.CheckstyleConfigPath;
+import com.boj.annotation.CheckstyleJarPath;
 import com.boj.annotation.JunitClassPath;
 import com.boj.jooq.tables.records.SubmissionRecord;
 import com.boj.jooq.tables.records.TestCaseRecord;
@@ -31,14 +33,20 @@ public class Judge {
   private final ProblemManager problemManager;
   private final SubmissionManager submissionManager;
   private final String junitClassPath;
+  private final String checkStyleJar;
+  private final String checkStyleConfig;
 
   @Inject
   Judge(ProblemManager problemManager,
         SubmissionManager submissionManager,
-        @JunitClassPath String junitClassPath) {
+        @JunitClassPath String junitClassPath,
+        @CheckstyleJarPath String checkStyleJar,
+        @CheckstyleConfigPath String checkStyleConfig) {
     this.problemManager = problemManager;
     this.submissionManager = submissionManager;
     this.junitClassPath = junitClassPath;
+    this.checkStyleJar = checkStyleJar;
+    this.checkStyleConfig = checkStyleConfig;
   }
 
   public void submit(SubmissionRecord submission) {
@@ -65,6 +73,7 @@ public class Judge {
         return;
       }
       FileUtils.write(new File(dir, solutionClass + ".java"), solutionSrc, Charset.defaultCharset());
+      checkStyke(dir.getAbsolutePath(), solutionClass);
       FileUtils.write(new File(dir, unitTestClass + ".java"), unitTestSrc, Charset.defaultCharset());
       compile(dir.getAbsolutePath(), solutionClass);
       compile(dir.getAbsolutePath(), unitTestClass);
@@ -120,6 +129,22 @@ public class Judge {
     if (returnValue != 0) {
       throw new CompileError(
           FileUtils.readFileToString(new File(dir + "/compile-err.log"), Charset.defaultCharset()));
+    }
+  }
+
+  private void checkStyke(String dir, String className) throws IOException, InterruptedException {
+    File output = new File(dir + "/checkstyle-out.log");
+    File error = new File(dir + "/checkstyle-err.log");
+    Process process = new ProcessBuilder("java", "-jar", checkStyleJar, "-c", checkStyleConfig,
+        dir + "/" + className + ".java")
+        .directory(new File(dir))
+        .redirectError(error)
+        .redirectOutput(output)
+        .start();
+    process.waitFor();
+    String checkstyleOutput = FileUtils.readFileToString(output, Charset.defaultCharset());
+    if (checkstyleOutput.contains("[WARN]")) {
+      throw new StyleError(checkstyleOutput);
     }
   }
 }

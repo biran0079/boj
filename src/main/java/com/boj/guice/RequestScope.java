@@ -29,8 +29,8 @@ public class RequestScope implements Scope {
 
   public <T> void seed(Key<T> key, T value) {
     Map<Key<?>, Object> scopedObjects = getScopedObjectMap(key);
-    checkState(!scopedObjects.containsKey(key), "A value for the key %s was " +
-            "already seeded in this scope. Old value: %s New value: %s", key,
+    checkState(!scopedObjects.containsKey(key), "A value for the key %s was "
+            + "already seeded in this scope. Old value: %s New value: %s", key,
         scopedObjects.get(key), value);
     scopedObjects.put(key, value);
   }

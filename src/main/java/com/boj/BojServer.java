@@ -10,7 +10,10 @@ import com.boj.jooq.tables.records.SubmissionRecord;
 import com.boj.jooq.tables.records.TestCaseRecord;
 import com.boj.jooq.tables.records.UserRecord;
 import com.boj.problem.ProblemManager;
-import com.boj.route.*;
+import com.boj.route.CreateOrUpdateProblemRoute;
+import com.boj.route.GetSubmitRoute;
+import com.boj.route.SubmitRoute;
+import com.boj.route.UserRoute;
 import com.boj.submission.SubmissionManager;
 import com.boj.user.UserManager;
 import com.google.common.collect.ImmutableMap;
@@ -20,7 +23,6 @@ import com.mitchellbosecke.pebble.loader.ClasspathLoader;
 import org.flywaydb.core.Flyway;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import spark.ModelAndView;
 import spark.template.pebble.PebbleTemplateEngine;
 
 import javax.inject.Singleton;
@@ -37,7 +39,7 @@ import static spark.Spark.*;
 @Singleton
 public class BojServer {
 
-  private static final Logger logger = LoggerFactory.getLogger(BojServer.class);;
+  private static final Logger logger = LoggerFactory.getLogger(BojServer.class);
 
   private final Flyway flyway;
   private final CreateOrUpdateProblemRoute createOrUpdateProblemRoute;
@@ -89,12 +91,13 @@ public class BojServer {
 
     ClasspathLoader loader = new ClasspathLoader();
     loader.setPrefix("templates/");
-    PebbleTemplateEngine engine = new PebbleTemplateEngine(loader);
 
     before("/*", (request, response) -> requestScope.enter());
     before("/*", authFilter);
 
     after("/*", (request, response) -> requestScope.exit());
+
+    PebbleTemplateEngine engine = new PebbleTemplateEngine(loader);
 
     get("/", (req, resp) -> modelAndViewFactory.create(new HashMap<>(), "index.html"), engine);
 
@@ -120,9 +123,9 @@ public class BojServer {
           Maps.newHashMap(ImmutableMap.of(
               "button", "update",
               "problem", problem,
-              "test", testCase
-          )), "problem_edit.html");
-      }, engine);
+              "test", testCase)),
+          "problem_edit.html");
+    }, engine);
 
     post("/problem", createOrUpdateProblemRoute);
     get("/problem/:id", (request, response) -> {

@@ -1,6 +1,3 @@
-/*
- * Copyright 2016 Addepar. All rights reserved.
- */
 package com.boj.guice;
 
 import com.google.inject.AbstractModule;
