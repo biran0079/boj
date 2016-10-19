@@ -39,6 +39,11 @@ public class RequestScope implements Scope {
     seed(Key.get(clazz), value);
   }
 
+  public boolean isSeeded(Class<?> clazz) {
+    Key<?> key = Key.get(clazz);
+    return getScopedObjectMap(key).containsKey(key);
+  }
+
   public <T> Provider<T> scope(final Key<T> key, final Provider<T> unscoped) {
     return () -> {
       Map<Key<?>, Object> scopedObjects = getScopedObjectMap(key);

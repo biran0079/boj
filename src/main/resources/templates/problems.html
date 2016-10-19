@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block content %}
+<script>
+    function deleteProblem(id) {
+        $(this).click(function() {
+            $.ajax({
+                url: '/problem/' + id,
+                type: 'DELETE',
+                success: function(result) {
+                    location.reload();
+                }
+            });
+        });
+    }
+</script>
+<style>
+.mdl-card__title {
+  color: #fff;
+  height: 100px;
+  background: #003A75;
+}
+.new-problem {
+    position: fixed;
+    display: block;
+    right: 0;
+    bottom: 0;
+    margin-right: 40px;
+    margin-bottom: 40px;
+    z-index: 900;
+}
+</style>
+<div class="mdl-grid">
+    {% for problem in problems  %}
+    <div class="mdl-cell mdl-cell--4-col">
+        <div class="mdl-card mdl-shadow--2dp">
+            <div class="mdl-card__title">
+                <h2 class="mdl-card__title-text">{{ problem.title }}</h2>
+            </div>
+            <div class="mdl-card__supporting-text">
+                {{ problem.description }}
+            </div>
+            <div class="mdl-card__actions mdl-card--border">
+                <a href="/problem/{{problem.id}}" class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">
+                    Solve
+                </a>
+            </div>
+            <div class="mdl-card__menu">
+                {% if admin == true %}
+                    <button onclick="deleteProblem({{problem.id}})" problem-id="{{problem.id}}" class="delete-problem mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect">
+                        <i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">delete</i>
+                    </button>
+                    <button onclick="location.href='/problem/edit/{{problem.id}}'" problem-id="{{problem.id}}" class="edit-problem mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect">
+                        <i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">mode_edit</i>
+                    </button>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% if admin == true %}
+    <button onclick="location.href='/problem/create'" class="new-problem mdl-button mdl-button--fab mdl-button--primary"><i class="material-icons">add</i></button>
+{% endif %}
+{% endblock %}
+

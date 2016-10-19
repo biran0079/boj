@@ -6,6 +6,7 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.google.api.client.http.apache.ApacheHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
+import com.google.api.client.repackaged.com.google.common.base.Strings;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.ImmutableSet;
@@ -25,7 +26,8 @@ public class UserAuthenticator {
 
   private static final String CLIENT_ID = "496017852143-19a6kjh7mvhlhb0pp4l5fsj5s5empgt8.apps.googleusercontent.com";
   private static final ImmutableSet<String> USER_WHITE_LIST = ImmutableSet.of(
-      "biran0079@gmail.com");
+      "biran0079@gmail.com",
+      "ran.bi@addepar.com");
 
   private Cache<String, UserRecord> authedUser = CacheBuilder.newBuilder()
       .expireAfterWrite(10, TimeUnit.MINUTES)

@@ -16,7 +16,7 @@ import javax.inject.Singleton;
 @Singleton
 public class AuthenticationFilter implements Filter {
 
-  private static final ImmutableSet<String> PATH_WHITE_LIST = ImmutableSet.of("/", "/signout");
+  private static final ImmutableSet<String> PATH_WHITE_LIST = ImmutableSet.of("/");
 
   private final UserAuthenticator authenticator;
 

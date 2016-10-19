@@ -22,21 +22,15 @@ import javax.inject.Singleton;
 public class SubmitRoute implements Route {
 
   private final Judge judge;
-  private final ProblemManager problemManager;
   private final SubmissionManager submissionManager;
-  private final Provider<UserRecord> userRecordProvider;
   private final Provider<UserRecord> user;
 
   @Inject
   public SubmitRoute(Judge judge,
-                     ProblemManager problemSet,
                      SubmissionManager submissionManager,
-                     Provider<UserRecord> userRecordProvider,
                      Provider<UserRecord> user) {
     this.judge = judge;
-    this.problemManager = problemSet;
     this.submissionManager = submissionManager;
-    this.userRecordProvider = userRecordProvider;
     this.user = user;
   }
 

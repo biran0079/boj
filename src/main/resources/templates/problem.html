@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>{{problem.title}}</h1>
+<p>{{problem.description}}</p>
+<form id="solution-form" action="/submit/{{problem.id}}" method="post">
+    solution<br>
+</form>
+<textarea rows="50" cols="80" name="solution" form="solution-form">{{problem.templateSrc}}</textarea><br>
+<input type="submit" name="submit" form="solution-form">
+{% endblock %}

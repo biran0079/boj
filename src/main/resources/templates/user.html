@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block content %}
+<img src="{{user.imageUrl}}">
+<h3>{{user.name}}</h3>
+{% include "submissions_content.html" %}
+<ul>
+    {% for submission_view in submission_views %}
+    <li>
+        {% set record = submission_view.record %}
+        {% set viewer = submission_view.viewer %}
+        {% set datetime = submission_view.datetime %}
+        User <a href="/user/{{viewer.id}}">{{viewer.name}}</a> viewed your submission
+        <a href="/submit/{{record.submissionId}}">#{{record.submissionId}}</a>
+        at {{datetime}}
+    </li>
+    {% endfor %}
+</ul>
+{% endblock %}

@@ -1,7 +1,6 @@
 package com.boj.problem;
 
 import com.boj.jooq.tables.Problem;
-import com.boj.jooq.tables.TestCase;
 import com.boj.jooq.tables.records.ProblemRecord;
 import com.boj.jooq.tables.records.TestCaseRecord;
 import com.google.common.collect.ImmutableList;
@@ -9,7 +8,12 @@ import com.google.inject.Inject;
 import org.jooq.DSLContext;
 
 import javax.inject.Singleton;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import static com.boj.jooq.tables.TestCase.TEST_CASE;
 
 /**
  * Created by biran on 10/17/16.
@@ -35,8 +39,8 @@ public class ProblemManager {
   }
 
   public TestCaseRecord getTestCaseForProblem(int problemId) {
-    return db.selectFrom(TestCase.TEST_CASE)
-        .where(TestCase.TEST_CASE.PROBLEM_ID.eq(problemId))
+    return db.selectFrom(TEST_CASE)
+        .where(TEST_CASE.PROBLEM_ID.eq(problemId))
         .fetchOne();
   }
 
@@ -59,12 +63,16 @@ public class ProblemManager {
   }
 
   public TestCaseRecord createTestCase(int problemId, String testSrc) {
-    return updateTestCase(problemId, testSrc);
+    TestCaseRecord testCaseRecord = db.newRecord(TEST_CASE);
+    testCaseRecord.setProblemId(problemId);
+    testCaseRecord.setJunitTestSrc(testSrc);
+    testCaseRecord.store();
+    return testCaseRecord;
   }
 
   public void deleteProblemAndTestCase(int problemId) {
     db.deleteFrom(Problem.PROBLEM).where(Problem.PROBLEM.ID.eq(problemId)).execute();
-    db.deleteFrom(TestCase.TEST_CASE).where(TestCase.TEST_CASE.PROBLEM_ID.eq(problemId)).execute();
+    db.deleteFrom(TEST_CASE).where(TEST_CASE.PROBLEM_ID.eq(problemId)).execute();
   }
 
   public TestCaseRecord updateTestCase(int problemId, String testSrc) {
@@ -72,5 +80,15 @@ public class ProblemManager {
     testCase.setJunitTestSrc(testSrc);
     testCase.store();
     return testCase;
+  }
+
+  public Map<Integer, ProblemRecord> getProblemsByIds(Set<Integer> problemids) {
+    Map<Integer, ProblemRecord> problems = new HashMap<>();
+    for (ProblemRecord record : db.selectFrom(Problem.PROBLEM)
+        .where(Problem.PROBLEM.ID.in(problemids))
+        .fetch()) {
+      problems.put(record.getId(), record);
+    }
+    return problems;
   }
 }
