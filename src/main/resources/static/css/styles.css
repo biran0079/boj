@@ -222,3 +222,8 @@ _:-ms-input-placeholder, :root .demo-graph {
       -ms-flex-align: center;
           align-items: center;
 }
+
+.editor {
+    width: 600px;
+    height: 500px;
+}

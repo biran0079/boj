@@ -41,7 +41,6 @@ public class SubmitRoute implements Route {
     SubmissionRecord submission =  submissionManager
         .createSubmission(problemId, user.get().getId(), solution, Verdict.PENDING);
     judge.submit(submission);
-    resp.redirect("/submit/" + submission.getId());
-    return "ok";
+    return submission.getId();
   }
 }

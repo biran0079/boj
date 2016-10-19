@@ -1,11 +1,32 @@
 {% extends "base.html" %}
 
 {% block content %}
+
+<script>
+$(document).ready(function() {
+    var solutionEditor = ace.edit("solution-editor");
+    solutionEditor.setTheme("ace/theme/monokai");
+    solutionEditor.setFontSize(16);
+    solutionEditor.setShowPrintMargin(false);
+    solutionEditor.getSession().setMode("ace/mode/java");
+    solutionEditor.getSession().setTabSize(2);
+});
+
+function submitSolution() {
+    var solution = ace.edit("solution-editor").getValue();
+    $.post('/submit/{{problem.id}}', {
+        solution: solution
+    },
+    function(id) {
+        location.href = "/submit/" + id;
+    });
+}
+
+</script>
+
 <h1>{{problem.title}}</h1>
-<p>{{problem.description}}</p>
-<form id="solution-form" action="/submit/{{problem.id}}" method="post">
-    solution<br>
-</form>
-<textarea rows="50" cols="80" name="solution" form="solution-form">{{problem.templateSrc}}</textarea><br>
-<input type="submit" name="submit" form="solution-form">
+<div>{{problem.description}}</div>
+solution<br>
+<div class="editor" id="solution-editor">{{problem.templateSrc}}</div>
+<input type="submit" name="submit" onclick="submitSolution()">
 {% endblock %}

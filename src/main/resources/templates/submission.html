@@ -1,16 +1,25 @@
 {% extends "base.html" %}
 
 {% block content %}
-{% if verdict == "PENDING" %}
+
 <script>
+{% if verdict == "PENDING" %}
     setTimeout(function() {
         location.reload();
     }, 1000);
-</script>
 {% endif %}
+    $(document).ready(function() {
+        var solutionEditor = ace.edit("solution-editor");
+        solutionEditor.setTheme("ace/theme/monokai");
+        solutionEditor.setFontSize(16);
+        solutionEditor.setShowPrintMargin(false);
+        solutionEditor.getSession().setMode("ace/mode/java");
+        solutionEditor.setReadOnly(true);
+    });
+</script>
 <h1>{{verdict}}</h1>
 <pre>{{message}}</pre><br>
 Source<br>
-<pre>{{source}}</pre><br>
+<div class="editor" id="solution-editor">{{source}}</div>
 {% endblock %}
 

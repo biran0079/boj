@@ -1,16 +1,52 @@
 {% extends "base.html" %}
 
 {% block content %}
-<form action="/problem" method="POST" id="problem_form">
-    Title:<br>
-    <input type="text" name="title" value="{{problem.title}}"><br>
-    <input type="hidden" name="id" value="{{problem.id}}">
-</form>
+<script>
+$(document).ready(function() {
+    var descriptionEditor = ace.edit("description-editor");
+    descriptionEditor.setTheme("ace/theme/monokai");
+    descriptionEditor.setFontSize(16);
+    descriptionEditor.setShowPrintMargin(false);
+    descriptionEditor.getSession().setMode("ace/mode/html");
+
+    var templateEditor = ace.edit("template-editor");
+    templateEditor.setTheme("ace/theme/monokai");
+    templateEditor.setFontSize(16);
+    templateEditor.setShowPrintMargin(false);
+    templateEditor.getSession().setMode("ace/mode/java");
+
+    var testEditor = ace.edit("test-editor");
+    testEditor.setTheme("ace/theme/monokai");
+    testEditor.setFontSize(16);
+    testEditor.setShowPrintMargin(false);
+    testEditor.getSession().setMode("ace/mode/java");
+});
+
+function createOrUpdateProblem() {
+    var description = ace.edit("description-editor").getValue();
+    var template = ace.edit("template-editor").getValue();
+    var test = ace.edit("test-editor").getValue();
+    var title = $('#problem-title').val();
+    var id = "{{problem.id}}";
+    $.post('/problem', {
+        id: id,
+        title: title,
+        description: description,
+        template: template,
+        test: test
+    },
+    function() {
+        location.href = "/problems";
+    });
+}
+</script>
+Title:<br>
+<input id="problem-title" type="text" value="{{problem.title}}"><br>
 Description:<br>
-<textarea rows="50" cols="80" name="description" form="problem_form">{{problem.description}}</textarea><br>
+<div class="editor" id="description-editor">{{problem.description}}</div>
 Template:<br>
-<textarea rows="50" cols="80" name="template" form="problem_form">{{problem.templateSrc}}</textarea><br>
+<div class="editor" id="template-editor">{{problem.templateSrc}}</div>
 Test:<br>
-<textarea rows="50" cols="80" name="test" form="problem_form">{{test.junitTestSrc}}</textarea><br>
-<input type="submit" value="{{button}}" form="problem_form">
+<div class="editor" id="test-editor">{{test.junitTestSrc}}</div>
+<input type="submit" value="{{button}}" onclick="createOrUpdateProblem()">
 {% endblock %}
