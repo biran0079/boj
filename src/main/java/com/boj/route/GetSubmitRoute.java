@@ -50,7 +50,10 @@ public class GetSubmitRoute implements TemplateViewRoute {
       model.put("message", Strings.nullToEmpty(submission.getMessage()));
       model.put("source", submission.getSubmittedSrc());
     }
-    submissionManager.tractSubmissionView(userProvider.get().getId(), submissionId);
+    UserRecord viewer = userProvider.get();
+    if (!viewer.getId().equals(submission.getUserId())) {
+      submissionManager.tractSubmissionView(viewer.getId(), submissionId);
+    }
     return modelAndViewFactory.create(model, "submission.html");
   }
 }

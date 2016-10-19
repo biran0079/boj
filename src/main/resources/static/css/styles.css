@@ -227,3 +227,16 @@ _:-ms-input-placeholder, :root .demo-graph {
     width: 600px;
     height: 500px;
 }
+
+.table-container > table {
+    width: 60%;
+}
+
+.table-container {
+    padding-left: 100px;
+    padding-top: 20px;
+}
+
+a {
+    text-decoration: none;
+}

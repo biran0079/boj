@@ -1,14 +1,28 @@
-<table>
-    {% for submission in submissions %}
-    <tr>
-        {% set record = submission.record %}
-        {% set problem = submission.problem %}
-        {% set user = submission.user %}
-        <td><a href="/problem/{{record.problemId}}">{{ problem.title }}</a></td>
-        <td><a href="/submit/{{record.id}}">{{ record.verdict }}</a></td>
-        <td><img width="36", height="36" src="{{user.imageUrl}}"></td>
-        <td><a href="/user/{{user.id}}">{{user.name}}</a></td>
-        <td>{{submission.datetime}}</td>
-    </tr>
-    {% endfor %}
-</table>
+<div class="table-container">
+    <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
+        <thead>
+        <tr>
+            <th>Problem</th>
+            <th>Verdict</th>
+            <th>User</th>
+            <th>Time</th>
+        </tr>
+        </thead>
+        {% for submission in submissions %}
+        <tr>
+            {% set record = submission.record %}
+            {% set problem = submission.problem %}
+            {% set user = submission.user %}
+            <td><a href="/problem/{{record.problemId}}">{{ problem.title }}</a></td>
+            <td><a href="/submit/{{record.id}}">{{ record.verdict }}</a></td>
+            <td>
+                <span class="mdl-chip mdl-chip--contact">
+                    <img class="mdl-chip__contact" src="{{user.imageUrl}}">
+                    <a href="/user/{{user.id}}"><span class="mdl-chip__text">{{user.name}}</span></a>
+                </span>
+           </td>
+            <td>{{submission.datetime}}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>

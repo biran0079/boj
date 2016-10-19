@@ -4,16 +4,24 @@
 <img src="{{user.imageUrl}}">
 <h3>{{user.name}}</h3>
 {% include "submissions_content.html" %}
-<ul>
-    {% for submission_view in submission_views %}
-    <li>
+<div class="table-container">
+    <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
+        {% for submission_view in submission_views %}
         {% set record = submission_view.record %}
         {% set viewer = submission_view.viewer %}
         {% set datetime = submission_view.datetime %}
-        User <a href="/user/{{viewer.id}}">{{viewer.name}}</a> viewed your submission
-        <a href="/submit/{{record.submissionId}}">#{{record.submissionId}}</a>
-        at {{datetime}}
-    </li>
-    {% endfor %}
-</ul>
+        <tr>
+            <td class="mdl-data-table__cell--non-numeric">
+                <span class="mdl-chip mdl-chip--contact">
+                    <img class="mdl-chip__contact" src="{{viewer.imageUrl}}">
+                    <a href="/user/{{user.id}}"><span class="mdl-chip__text">{{viewer.name}}</span></a>
+                </span>
+                viewed your submission
+                <a href="/submit/{{record.submissionId}}">#{{record.submissionId}}</a>
+                at {{datetime}}
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
 {% endblock %}
