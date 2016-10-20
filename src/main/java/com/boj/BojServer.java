@@ -1,8 +1,7 @@
 package com.boj;
 
-import com.boj.base.DateUtil;
-import com.boj.base.MapBuilder;
-import com.boj.base.ModelAndViewFactory;
+import com.boj.annotation.IsAdmin;
+import com.boj.base.*;
 import com.boj.filter.AuthenticationFilter;
 import com.boj.guice.RequestScope;
 import com.boj.jooq.tables.records.ProblemRecord;
@@ -25,6 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spark.template.pebble.PebbleTemplateEngine;
 
+import javax.inject.Provider;
 import javax.inject.Singleton;
 import java.util.HashMap;
 import java.util.List;
@@ -52,6 +52,8 @@ public class BojServer {
   private final UserManager userManager;
   private final SubmissionManager submissionManager;
   private final ModelAndViewFactory modelAndViewFactory;
+  private final PermissionDeniedExceptionHandler permissionDeniedExceptionHandler;
+  private final Provider<Boolean> isAdmin;
 
   @Inject
   public BojServer(Flyway flyway,
@@ -64,7 +66,9 @@ public class BojServer {
                    ProblemManager problemManager,
                    UserManager userManager,
                    SubmissionManager submissionManager,
-                   ModelAndViewFactory modelAndViewFactory) {
+                   ModelAndViewFactory modelAndViewFactory,
+                   PermissionDeniedExceptionHandler permissionDeniedExceptionHandler,
+                   @IsAdmin Provider<Boolean> isAdmin) {
     this.flyway = flyway;
     this.createOrUpdateProblemRoute = createOrUpdateProblemRoute;
     this.submitRoute = submitRoute;
@@ -76,11 +80,14 @@ public class BojServer {
     this.userManager = userManager;
     this.submissionManager = submissionManager;
     this.modelAndViewFactory = modelAndViewFactory;
+    this.permissionDeniedExceptionHandler = permissionDeniedExceptionHandler;
+    this.isAdmin = isAdmin;
   }
 
   void start() {
     flyway.migrate();
     staticFiles.location("/static");
+    exception(PermissionDeniedException.class, permissionDeniedExceptionHandler);
     exception(Exception.class, (exception, request, response) -> {
       logger.error("Error when handling {}", request.pathInfo(), exception);
       response.redirect("/error");
@@ -138,8 +145,10 @@ public class BojServer {
           Maps.newHashMap(ImmutableMap.of("problem", problemRecord)),
           "problem.html");
     }, engine);
-    // TODO: require admin
     delete("/problem/:id", (request, response) -> {
+      if (!isAdmin.get()) {
+        throw new PermissionDeniedException();
+      }
       int problemId = Integer.valueOf(request.params(":id"));
       problemManager.deleteProblemAndTestCase(problemId);
       return "ok";

@@ -1,6 +1,7 @@
 package com.boj.route;
 
 import com.boj.annotation.IsAdmin;
+import com.boj.base.PermissionDeniedException;
 import com.boj.jooq.tables.records.ProblemRecord;
 import com.boj.problem.ProblemManager;
 import com.google.api.client.repackaged.com.google.common.base.Strings;
@@ -24,7 +25,7 @@ public class CreateOrUpdateProblemRoute implements Route {
 
   @Inject
   public CreateOrUpdateProblemRoute(ProblemManager problemManager,
-                                    @IsAdmin  Provider<Boolean> isAdmin) {
+                                    @IsAdmin Provider<Boolean> isAdmin) {
     this.problemManager = problemManager;
     this.isAdmin = isAdmin;
   }
@@ -32,7 +33,7 @@ public class CreateOrUpdateProblemRoute implements Route {
   @Override
   public Object handle(Request req, Response resp) throws Exception {
     if (!isAdmin.get()) {
-      return "unauthorized";
+      throw new PermissionDeniedException();
     }
     String title = req.queryParams("title");
     String desc = req.queryParams("description");
