@@ -57,9 +57,14 @@ public class SubmissionManager {
   }
 
   public List<SubmissionRecord> getSubmissionsForUser(String userId) {
+    return getSubmissionsForUser(userId, Integer.MAX_VALUE);
+  }
+
+  public List<SubmissionRecord> getSubmissionsForUser(String userId, int limit) {
     return db.selectFrom(SUBMISSION)
         .where(SUBMISSION.USER_ID.eq(userId))
         .orderBy(SUBMISSION.DATETIME.desc())
+        .limit(limit)
         .fetch();
   }
 

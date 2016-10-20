@@ -224,19 +224,34 @@ _:-ms-input-placeholder, :root .demo-graph {
 }
 
 .editor {
-    width: 600px;
-    height: 500px;
+    width: 800px;
+    height: 600px;
+    margin-bottom: 20px;
 }
 
-.table-container > table {
-    width: 60%;
+.content > table {
+    width: 100%;
+    margin-top: 20px;
 }
 
-.table-container {
-    padding-left: 100px;
+.content {
+    width: 100%;
+    max-width: 750px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 40px;
     padding-top: 20px;
 }
 
 a {
     text-decoration: none;
+}
+pre {
+    white-space: pre-wrap;
+}
+
+.problem-description {
+    margin-top: 20px;
+    margin-bottom: 40px;
+    padding-left: 20px;
 }

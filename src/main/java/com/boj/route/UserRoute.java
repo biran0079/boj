@@ -49,12 +49,12 @@ public class UserRoute implements TemplateViewRoute {
   @Override
   public ModelAndView handle(Request request, Response response) throws Exception {
     UserRecord user = userManager.getUser(request.params(":id"));
-    List<SubmissionRecord> submissionRecordList = submissionManager.getSubmissionsForUser(user.getId());
+    List<SubmissionRecord> submissionRecordList = submissionManager.getSubmissionsForUser(user.getId(), 5);
     Map<Integer, ProblemRecord> problems = problemManager.getProblemsByIds(
         submissionRecordList.stream()
             .map(SubmissionRecord::getProblemId)
             .collect(Collectors.toSet()));
-    List<SubmissionViewRecord> submissionViews = submissionManager.getSubmissionViewRecords(user.getId(), 10);
+    List<SubmissionViewRecord> submissionViews = submissionManager.getSubmissionViewRecords(user.getId(), 5);
     Map<String, UserRecord> users = userManager.getUsersByIds(submissionViews.stream()
         .map(SubmissionViewRecord::getViewerUserId)
         .collect(Collectors.toSet()));

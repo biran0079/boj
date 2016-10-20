@@ -11,15 +11,17 @@
     $(document).ready(function() {
         var solutionEditor = ace.edit("solution-editor");
         solutionEditor.setTheme("ace/theme/monokai");
-        solutionEditor.setFontSize(16);
+        solutionEditor.setFontSize(14);
         solutionEditor.setShowPrintMargin(false);
         solutionEditor.getSession().setMode("ace/mode/java");
         solutionEditor.setReadOnly(true);
     });
 </script>
-<h1>{{verdict}}</h1>
-<pre>{{message}}</pre><br>
-Source<br>
-<div class="editor" id="solution-editor">{{source}}</div>
+<div class="content">
+    <h1>{{verdict}}</h1>
+    <pre>{{message}}</pre><br>
+    <h5>Code</h5>
+    <div class="editor" id="solution-editor">{{source}}</div>
+</div>
 {% endblock %}
 

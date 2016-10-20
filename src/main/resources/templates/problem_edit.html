@@ -5,19 +5,19 @@
 $(document).ready(function() {
     var descriptionEditor = ace.edit("description-editor");
     descriptionEditor.setTheme("ace/theme/monokai");
-    descriptionEditor.setFontSize(16);
+    descriptionEditor.setFontSize(14);
     descriptionEditor.setShowPrintMargin(false);
     descriptionEditor.getSession().setMode("ace/mode/html");
 
     var templateEditor = ace.edit("template-editor");
     templateEditor.setTheme("ace/theme/monokai");
-    templateEditor.setFontSize(16);
+    templateEditor.setFontSize(14);
     templateEditor.setShowPrintMargin(false);
     templateEditor.getSession().setMode("ace/mode/java");
 
     var testEditor = ace.edit("test-editor");
     testEditor.setTheme("ace/theme/monokai");
-    testEditor.setFontSize(16);
+    testEditor.setFontSize(14);
     testEditor.setShowPrintMargin(false);
     testEditor.getSession().setMode("ace/mode/java");
 });
@@ -40,13 +40,20 @@ function createOrUpdateProblem() {
     });
 }
 </script>
-Title:<br>
-<input id="problem-title" type="text" value="{{problem.title}}"><br>
-Description:<br>
-<div class="editor" id="description-editor">{{problem.description}}</div>
-Template:<br>
-<div class="editor" id="template-editor">{{problem.templateSrc}}</div>
-Test:<br>
-<div class="editor" id="test-editor">{{test.junitTestSrc}}</div>
-<input type="submit" value="{{button}}" onclick="createOrUpdateProblem()">
+<div class="content">
+    <div class="mdl-textfield mdl-js-textfield">
+        <input class="mdl-textfield__input" id="problem-title" type="text" value="{{problem.title}}">
+        <label class="mdl-textfield__label" for="problem-title">Title</label>
+    </div>
+    <h5>Description</h5>
+    <div class="editor" id="description-editor">{{problem.description}}</div>
+    <h5>Template</h5>
+    <div class="editor" id="template-editor">{{problem.templateSrc}}</div>
+    <h5>Test</h5>
+    <div class="editor" id="test-editor">{{test.junitTestSrc}}</div>
+    <button onclick="createOrUpdateProblem()"
+            class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
+        {{button}}
+    </button>
+</div>
 {% endblock %}
