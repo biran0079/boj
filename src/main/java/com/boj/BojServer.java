@@ -87,7 +87,7 @@ public class BojServer {
     });
 
     port(8080);
-    threadPool(Runtime.getRuntime().availableProcessors());
+    threadPool(Math.max(4, Runtime.getRuntime().availableProcessors()));
 
     ClasspathLoader loader = new ClasspathLoader();
     loader.setPrefix("templates/");
@@ -103,11 +103,9 @@ public class BojServer {
 
     get("/error", (req, resp) -> modelAndViewFactory.create(new HashMap<>(), "error.html"), engine);
 
-    get("/problems", (request, response) -> {
-      return modelAndViewFactory.create(
-          MapBuilder.create().put("problems", problemManager.getProblems()).build(),
-          "problems.html");
-    }, engine);
+    get("/problems", (request, response) -> modelAndViewFactory.create(
+        MapBuilder.create().put("problems", problemManager.getProblems()).build(),
+        "problems.html"), engine);
 
     get("/problem/create", (req, resp) -> modelAndViewFactory.create(
         Maps.newHashMap(ImmutableMap.of(
