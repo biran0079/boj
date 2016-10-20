@@ -27,7 +27,16 @@ public class UserAuthenticator {
   private static final String CLIENT_ID = "496017852143-19a6kjh7mvhlhb0pp4l5fsj5s5empgt8.apps.googleusercontent.com";
   private static final ImmutableSet<String> USER_WHITE_LIST = ImmutableSet.of(
       "biran0079@gmail.com",
-      "ran.bi@addepar.com");
+      "ran.bi@addepar.com",
+      "seven.frank.chen@gmail.com",
+      "rita.ren.yuxi@gmail.com",
+      "jml901031@gmail.com",
+      "zhaodh89@gmail.com",
+      "jayden.fy@gmail.com",
+      "wanglei5590@gmail.com",
+      "zhongmingmu2015@u.northwestern.edu",
+      "grueo.yjz@gmail.com",
+      "henrywu573@gmail.com");
 
   private Cache<String, UserRecord> authedUser = CacheBuilder.newBuilder()
       .expireAfterWrite(10, TimeUnit.MINUTES)
