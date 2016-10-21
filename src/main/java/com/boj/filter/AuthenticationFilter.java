@@ -1,6 +1,6 @@
 package com.boj.filter;
 
-import com.boj.base.ErrorPage;
+import com.boj.user.LoginState;
 import com.boj.user.UserAuthenticator;
 import com.google.inject.Inject;
 import spark.Filter;
@@ -23,10 +23,10 @@ public class AuthenticationFilter implements Filter {
   }
 
   @Override
-  public void handle(Request request, Response response) throws Exception {
+  public void handle(Request request, Response response) {
     String idToken = request.cookie("id_token");
     if (idToken == null) {
-      authenticator.seedGuestUser();
+      authenticator.seedGuestUser(LoginState.NOT_LOGGED_IN);
     } else {
       authenticator.authenticateAndSeedUser(idToken);
     }

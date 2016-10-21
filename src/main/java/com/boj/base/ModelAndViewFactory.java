@@ -5,7 +5,7 @@ package com.boj.base;
 
 import com.boj.annotation.IsAdmin;
 import com.boj.jooq.tables.records.UserRecord;
-import com.boj.user.UserManager;
+import com.boj.user.LoginState;
 import spark.ModelAndView;
 
 import javax.inject.Inject;
@@ -21,23 +21,21 @@ public class ModelAndViewFactory {
 
   private final Provider<UserRecord> userProvider;
   private final Provider<Boolean> isAdmin;
-  private final UserManager userManager;
+  private final Provider<LoginState> loginState;
 
   @Inject
   ModelAndViewFactory(Provider<UserRecord> userProvider,
                       @IsAdmin Provider<Boolean> isAdmin,
-                      UserManager userManager) {
+                      Provider<LoginState> loginState) {
     this.userProvider = userProvider;
     this.isAdmin = isAdmin;
-    this.userManager = userManager;
+    this.loginState = loginState;
   }
 
   public ModelAndView create(Map<String, Object> model, String templatePath) {
-    UserRecord user = userProvider.get();
-    if (!userManager.isGuestUser(user)) {
-      model.put("me", userProvider.get());
-      model.put("admin", isAdmin.get());
-    }
+    model.put("me", userProvider.get());
+    model.put("admin", isAdmin.get());
+    model.put("state", loginState.get().toString());
     return new ModelAndView(model, templatePath);
   }
 }

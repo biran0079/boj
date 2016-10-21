@@ -40,14 +40,23 @@
 
     <div class="demo-drawer mdl-layout__drawer mdl-color--blue-grey-900 mdl-color-text--blue-grey-50">
         <header class="demo-drawer-header">
-            {% if me is empty %}
-                <div id="my-signin2"></div>
-            {% else %}
+            {% if state == "OK" %}
                 <img src="{{me.imageUrl}}" class="demo-avatar">
                 <div class="demo-avatar-dropdown">
                     <span>{{me.email}}</span>
                     <div class="mdl-layout-spacer"></div>
                 </div>
+            {% else %}
+                {% if state == "GOOGLE_AUTH_FAILED" %}
+                     <script>
+                        onSignIn = function() {
+                            console.log('signing out in 3 sec');
+                            setTimeout(signOut, 3000);
+                        };
+                    </script>
+                    <span>Google authentication failed. Signing out in 3 secs.</span>
+                {% endif %}
+                <div id="my-signin2"></div>
             {% endif %}
         </header>
         <nav class="demo-navigation mdl-navigation mdl-color--blue-grey-800">
