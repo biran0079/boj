@@ -2,6 +2,7 @@ package com.boj;
 
 import com.boj.annotation.IsAdmin;
 import com.boj.base.*;
+import com.boj.filter.AccessControlFilter;
 import com.boj.filter.AuthenticationFilter;
 import com.boj.guice.RequestScope;
 import com.boj.jooq.tables.records.ProblemRecord;
@@ -50,7 +51,6 @@ public class BojServer {
   private final CreateOrUpdateProblemRoute createOrUpdateProblemRoute;
   private final SubmitRoute submitRoute;
   private final UserRoute userRoute;
-  private final AuthenticationFilter authFilter;
   private final GetSubmitRoute getSubmitRoute;
   private final RequestScope requestScope;
   private final ProblemManager problemManager;
@@ -58,6 +58,8 @@ public class BojServer {
   private final SubmissionManager submissionManager;
   private final ModelAndViewFactory modelAndViewFactory;
   private final PermissionDeniedExceptionHandler permissionDeniedExceptionHandler;
+  private final AuthenticationFilter authFilter;
+  private final AccessControlFilter accessControlFilter;
   private final Provider<Boolean> isAdmin;
 
   @Inject
@@ -65,7 +67,6 @@ public class BojServer {
                    CreateOrUpdateProblemRoute createOrUpdateProblemRoute,
                    SubmitRoute submitRoute,
                    GetSubmitRoute getSubmitRoute,
-                   AuthenticationFilter authFilter,
                    UserRoute userRoute,
                    RequestScope requestScope,
                    ProblemManager problemManager,
@@ -73,12 +74,13 @@ public class BojServer {
                    SubmissionManager submissionManager,
                    ModelAndViewFactory modelAndViewFactory,
                    PermissionDeniedExceptionHandler permissionDeniedExceptionHandler,
+                   AuthenticationFilter authFilter,
+                   AccessControlFilter accessControlFilter,
                    @IsAdmin Provider<Boolean> isAdmin) {
     this.flyway = flyway;
     this.createOrUpdateProblemRoute = createOrUpdateProblemRoute;
     this.submitRoute = submitRoute;
     this.getSubmitRoute = getSubmitRoute;
-    this.authFilter = authFilter;
     this.userRoute = userRoute;
     this.requestScope = requestScope;
     this.problemManager = problemManager;
@@ -86,6 +88,8 @@ public class BojServer {
     this.submissionManager = submissionManager;
     this.modelAndViewFactory = modelAndViewFactory;
     this.permissionDeniedExceptionHandler = permissionDeniedExceptionHandler;
+    this.authFilter = authFilter;
+    this.accessControlFilter = accessControlFilter;
     this.isAdmin = isAdmin;
   }
 
@@ -105,6 +109,7 @@ public class BojServer {
 
     before("/*", (request, response) -> requestScope.enter());
     before("/*", authFilter);
+    before("/*", accessControlFilter);
 
     after("/*", (request, response) -> requestScope.exit());
 
@@ -112,7 +117,9 @@ public class BojServer {
 
     get("/", (req, resp) -> modelAndViewFactory.create(new HashMap<>(), "index.html"), engine);
 
-    get("/error", (req, resp) -> modelAndViewFactory.create(new HashMap<>(), "error.html"), engine);
+    get("/error", (req, resp) -> modelAndViewFactory.create(MapBuilder.create()
+        .put("message", ErrorPage.fromString(req.queryParams("reason")).getMessage())
+        .build(), "error.html"), engine);
 
     get("/problems", (request, response) -> modelAndViewFactory.create(
         MapBuilder.create().put("problems", problemManager.getProblems()).build(),

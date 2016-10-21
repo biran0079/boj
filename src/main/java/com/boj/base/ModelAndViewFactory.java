@@ -4,9 +4,8 @@
 package com.boj.base;
 
 import com.boj.annotation.IsAdmin;
-import com.boj.guice.RequestScope;
 import com.boj.jooq.tables.records.UserRecord;
-import com.google.inject.ProvisionException;
+import com.boj.user.UserManager;
 import spark.ModelAndView;
 
 import javax.inject.Inject;
@@ -22,19 +21,20 @@ public class ModelAndViewFactory {
 
   private final Provider<UserRecord> userProvider;
   private final Provider<Boolean> isAdmin;
-  private final RequestScope requestScope;
+  private final UserManager userManager;
 
   @Inject
   ModelAndViewFactory(Provider<UserRecord> userProvider,
                       @IsAdmin Provider<Boolean> isAdmin,
-                      RequestScope requestScope) {
+                      UserManager userManager) {
     this.userProvider = userProvider;
     this.isAdmin = isAdmin;
-    this.requestScope = requestScope;
+    this.userManager = userManager;
   }
 
   public ModelAndView create(Map<String, Object> model, String templatePath) {
-    if (requestScope.isSeeded(UserRecord.class)) {
+    UserRecord user = userProvider.get();
+    if (!userManager.isGuestUser(user)) {
       model.put("me", userProvider.get());
       model.put("admin", isAdmin.get());
     }
