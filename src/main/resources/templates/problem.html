@@ -22,7 +22,11 @@ function submitSolution() {
     });
 }
 
+function exportProblem() {
+    location.href = '/problem/export/{{problem.id}}';
+}
 </script>
+<iframe id="for_download" style="display:none;"></iframe>
 <div class="content">
     <h1>{{problem.title}}</h1>
     <div class="problem-description">{{problem.description}}</div>
@@ -31,5 +35,11 @@ function submitSolution() {
             class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
         submit
     </button>
+    {% if isAdmin == true %}
+    <button onclick="exportProblem()"
+            class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
+        export
+    </button>
+    {% endif %}
 </div>
 {% endblock %}

@@ -1,19 +1,20 @@
 package com.boj.problem;
 
-import com.boj.jooq.tables.Problem;
 import com.boj.jooq.tables.records.ProblemRecord;
-import com.boj.jooq.tables.records.TestCaseRecord;
+import com.boj.submission.SubmissionManager;
 import com.google.common.collect.ImmutableList;
 import com.google.inject.Inject;
 import org.jooq.DSLContext;
+import org.jooq.Field;
 
 import javax.inject.Singleton;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static com.boj.jooq.tables.TestCase.TEST_CASE;
+import static com.boj.jooq.tables.Problem.PROBLEM;
 
 /**
  * Created by biran on 10/17/16.
@@ -29,66 +30,71 @@ public class ProblemManager {
   }
 
   public List<ProblemRecord> getProblems() {
-    return ImmutableList.copyOf(db.selectFrom(Problem.PROBLEM).fetch());
+    return ImmutableList.copyOf(db.selectFrom(PROBLEM).fetch());
   }
 
   public ProblemRecord getProblemById(int id) {
-    return db.selectFrom(Problem.PROBLEM)
-        .where(Problem.PROBLEM.ID.eq(id))
+    return db.selectFrom(PROBLEM)
+        .where(PROBLEM.ID.eq(id))
         .fetchOne();
   }
 
-  public TestCaseRecord getTestCaseForProblem(int problemId) {
-    return db.selectFrom(TEST_CASE)
-        .where(TEST_CASE.PROBLEM_ID.eq(problemId))
-        .fetchOne();
-  }
-
-  public ProblemRecord createProblem(String title, String description, String template) {
-    ProblemRecord problem = db.newRecord(Problem.PROBLEM);
+  public ProblemRecord createProblem(String title, String description, String template, String test) {
+    ProblemRecord problem = db.newRecord(PROBLEM);
     problem.setTitle(title);
     problem.setDescription(description);
     problem.setTemplateSrc(template);
+    problem.setJunitTestSrc(test);
     problem.store();
     return problem;
   }
 
-  public ProblemRecord updateProblem(int problemId, String title, String description, String template) {
+  public ProblemRecord updateProblem(int problemId,
+                                     String title,
+                                     String description,
+                                     String template,
+                                     String test) {
     ProblemRecord problem = getProblemById(problemId);
     problem.setTitle(title);
     problem.setDescription(description);
     problem.setTemplateSrc(template);
+    problem.setJunitTestSrc(test);
     problem.store();
     return problem;
   }
 
-  public TestCaseRecord createTestCase(int problemId, String testSrc) {
-    TestCaseRecord testCaseRecord = db.newRecord(TEST_CASE);
-    testCaseRecord.setProblemId(problemId);
-    testCaseRecord.setJunitTestSrc(testSrc);
-    testCaseRecord.store();
-    return testCaseRecord;
-  }
-
-  public void deleteProblemAndTestCase(int problemId) {
-    db.deleteFrom(Problem.PROBLEM).where(Problem.PROBLEM.ID.eq(problemId)).execute();
-    db.deleteFrom(TEST_CASE).where(TEST_CASE.PROBLEM_ID.eq(problemId)).execute();
-  }
-
-  public TestCaseRecord updateTestCase(int problemId, String testSrc) {
-    TestCaseRecord testCase = getTestCaseForProblem(problemId);
-    testCase.setJunitTestSrc(testSrc);
-    testCase.store();
-    return testCase;
+  public void deleteProblem(int problemId) {
+    db.deleteFrom(PROBLEM).where(PROBLEM.ID.eq(problemId)).execute();
   }
 
   public Map<Integer, ProblemRecord> getProblemsByIds(Set<Integer> problemids) {
     Map<Integer, ProblemRecord> problems = new HashMap<>();
-    for (ProblemRecord record : db.selectFrom(Problem.PROBLEM)
-        .where(Problem.PROBLEM.ID.in(problemids))
+    for (ProblemRecord record : db.selectFrom(PROBLEM)
+        .where(PROBLEM.ID.in(problemids))
         .fetch()) {
       problems.put(record.getId(), record);
     }
     return problems;
+  }
+
+  private static final List<Field<?>> IMPORT_EXPORT_FIELDS = ImmutableList.of(
+      PROBLEM.TITLE,
+      PROBLEM.DESCRIPTION,
+      PROBLEM.TEMPLATE_SRC,
+      PROBLEM.JUNIT_TEST_SRC);
+
+  public void importProblemFromjson(String json) throws IOException {
+    db.loadInto(PROBLEM)
+        .loadJSON(json)
+        .fields(IMPORT_EXPORT_FIELDS)
+        .execute();
+  }
+
+  public String exportProblemByIdAsJson(int id) {
+    return db.select(IMPORT_EXPORT_FIELDS)
+        .from(PROBLEM)
+        .where(PROBLEM.ID.eq(id))
+        .fetch()
+        .formatJSON();
   }
 }

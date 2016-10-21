@@ -1,0 +1,4 @@
+#!/bin/bash
+
+./migrate
+mvn clean package

@@ -6,7 +6,6 @@ import com.boj.filter.AuthenticationFilter;
 import com.boj.guice.RequestScope;
 import com.boj.jooq.tables.records.ProblemRecord;
 import com.boj.jooq.tables.records.SubmissionRecord;
-import com.boj.jooq.tables.records.TestCaseRecord;
 import com.boj.jooq.tables.records.UserRecord;
 import com.boj.problem.ProblemManager;
 import com.boj.route.CreateOrUpdateProblemRoute;
@@ -19,6 +18,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import com.mitchellbosecke.pebble.loader.ClasspathLoader;
+import org.apache.commons.io.IOUtils;
 import org.flywaydb.core.Flyway;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,6 +26,10 @@ import spark.template.pebble.PebbleTemplateEngine;
 
 import javax.inject.Provider;
 import javax.inject.Singleton;
+import javax.servlet.MultipartConfigElement;
+import javax.servlet.http.HttpServletResponse;
+import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -90,7 +94,6 @@ public class BojServer {
     exception(PermissionDeniedException.class, permissionDeniedExceptionHandler);
     exception(Exception.class, (exception, request, response) -> {
       logger.error("Error when handling {}", request.pathInfo(), exception);
-      response.redirect("/error");
     });
 
     port(8080);
@@ -117,18 +120,15 @@ public class BojServer {
     get("/problem/create", (req, resp) -> modelAndViewFactory.create(
         Maps.newHashMap(ImmutableMap.of(
             "button", "create",
-            "problem", new ProblemRecord(),
-            "test", new TestCaseRecord()
+            "problem", new ProblemRecord()
         )), "problem_edit.html"), engine);
     get("/problem/edit/:id", (req, resp) -> {
       int problemId = Integer.valueOf(req.params(":id"));
       ProblemRecord problem = problemManager.getProblemById(problemId);
-      TestCaseRecord testCase = problemManager.getTestCaseForProblem(problemId);
       return modelAndViewFactory.create(
           Maps.newHashMap(ImmutableMap.of(
               "button", "update",
-              "problem", problem,
-              "test", testCase)),
+              "problem", problem)),
           "problem_edit.html");
     }, engine);
 
@@ -138,11 +138,16 @@ public class BojServer {
       ProblemRecord problemRecord = problemManager.getProblemById(id);
       if (problemRecord == null) {
         return modelAndViewFactory.create(
-            Maps.newHashMap(ImmutableMap.of("message", "problem does not exist")),
+            MapBuilder.create()
+                .put("message", "problem does not exist")
+                .build(),
             "error.html");
       }
       return modelAndViewFactory.create(
-          Maps.newHashMap(ImmutableMap.of("problem", problemRecord)),
+          MapBuilder.create()
+              .put("problem", problemRecord)
+              .put("isAdmin", isAdmin.get())
+              .build(),
           "problem.html");
     }, engine);
     delete("/problem/:id", (request, response) -> {
@@ -150,9 +155,30 @@ public class BojServer {
         throw new PermissionDeniedException();
       }
       int problemId = Integer.valueOf(request.params(":id"));
-      problemManager.deleteProblemAndTestCase(problemId);
+      problemManager.deleteProblem(problemId);
       return "ok";
     });
+
+    get("/problem/export/:id", ((req, res) -> {
+      int id = Integer.valueOf(req.params(":id"));
+      res.type("Application/octetstream");
+      res.header("Content-Disposition", String.format("attachment; filename=\"%s\"", "problem_" + id + ".json"));
+      HttpServletResponse raw = res.raw();
+      raw.getOutputStream().write(problemManager.exportProblemByIdAsJson(id).getBytes());
+      raw.getOutputStream().flush();
+      raw.getOutputStream().close();
+      return raw;
+    }));
+
+    post("/problem/import", ((req, res) -> {
+      req.attribute("org.eclipse.jetty.multipartConfig", new MultipartConfigElement("/tmp"));
+      try (InputStream is = req.raw().getPart("problem_file").getInputStream()) {
+        String json = IOUtils.toString(is, Charset.defaultCharset());
+        problemManager.importProblemFromjson(json);
+      }
+      res.redirect("/problems");
+      return null;
+    }));
 
     get("/submits", (request, response) -> {
       List<SubmissionRecord> submissionRecordList = submissionManager.getSubmissions();

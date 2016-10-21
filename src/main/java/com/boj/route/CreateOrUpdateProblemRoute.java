@@ -41,12 +41,10 @@ public class CreateOrUpdateProblemRoute implements Route {
     String test = req.queryParams("test");
     String problemId = req.queryParams("id");
     if (Strings.isNullOrEmpty(problemId)) {
-      ProblemRecord problem = problemManager.createProblem(title, desc, template);
-      problemManager.createTestCase(problem.getId(), test);
+      problemManager.createProblem(title, desc, template, test);
     } else {
       int id = Integer.valueOf(problemId);
-      problemManager.updateProblem(id, title, desc, template);
-      problemManager.updateTestCase(id, test);
+      problemManager.updateProblem(id, title, desc, template, test);
     }
     resp.redirect("/problems");
     return null;

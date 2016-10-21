@@ -3,8 +3,8 @@ package com.boj.judge;
 import com.boj.annotation.CheckstyleConfigPath;
 import com.boj.annotation.CheckstyleJarPath;
 import com.boj.annotation.JunitClassPath;
+import com.boj.jooq.tables.records.ProblemRecord;
 import com.boj.jooq.tables.records.SubmissionRecord;
-import com.boj.jooq.tables.records.TestCaseRecord;
 import com.boj.judge.error.*;
 import com.boj.problem.ProblemManager;
 import com.boj.submission.SubmissionManager;
@@ -50,16 +50,15 @@ public class Judge {
   }
 
   public void submit(SubmissionRecord submission) {
-    TestCaseRecord testCase = problemManager.getTestCaseForProblem(submission.getProblemId());
-    executor.submit(() -> judge(testCase, submission));
+    executor.submit(() -> judge(problemManager.getProblemById(submission.getProblemId()), submission));
   }
 
-  private void judge(TestCaseRecord testCase, SubmissionRecord submission) {
+  private void judge(ProblemRecord problem, SubmissionRecord submission) {
     try {
       File dir = new File("/tmp/boj/" + submission.getId());
       dir.mkdirs();
-      String unitTestSrc = testCase.getJunitTestSrc();
       String solutionSrc = submission.getSubmittedSrc();
+      String unitTestSrc = problem.getJunitTestSrc();
       String unitTestClass = extractClassName(unitTestSrc);
       String solutionClass = extractClassName(solutionSrc);
       if (unitTestClass == null) {
