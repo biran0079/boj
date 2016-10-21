@@ -14,6 +14,7 @@ import com.boj.route.SubmitRoute;
 import com.boj.route.UserRoute;
 import com.boj.submission.SubmissionManager;
 import com.boj.user.UserManager;
+import com.google.api.client.repackaged.com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
@@ -181,7 +182,11 @@ public class BojServer {
     }));
 
     get("/submits", (request, response) -> {
-      List<SubmissionRecord> submissionRecordList = submissionManager.getSubmissions();
+      String userId = request.queryParams("user_id");
+      List<SubmissionRecord> submissionRecordList =
+          Strings.isNullOrEmpty(userId)
+              ? submissionManager.getSubmissions()
+              : submissionManager.getSubmissionsForUser(userId);
       Map<Integer, ProblemRecord> problemRecordMap = problemManager.getProblemsByIds(
           submissionRecordList.stream()
               .map(SubmissionRecord::getProblemId)

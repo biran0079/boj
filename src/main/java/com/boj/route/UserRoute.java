@@ -60,6 +60,7 @@ public class UserRoute implements TemplateViewRoute {
         .collect(Collectors.toSet()));
 
     return modelAndViewFactory.create(MapBuilder.create()
+        .put("user", user)
         .put("submissions", submissionRecordList.stream()
             .map(record -> MapBuilder.create()
                 .put("record", record)

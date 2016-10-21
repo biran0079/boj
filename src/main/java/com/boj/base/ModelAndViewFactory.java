@@ -35,7 +35,7 @@ public class ModelAndViewFactory {
 
   public ModelAndView create(Map<String, Object> model, String templatePath) {
     if (requestScope.isSeeded(UserRecord.class)) {
-      model.put("user", userProvider.get());
+      model.put("me", userProvider.get());
       model.put("admin", isAdmin.get());
     }
     return new ModelAndView(model, templatePath);
