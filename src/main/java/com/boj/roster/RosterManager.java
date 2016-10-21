@@ -6,6 +6,7 @@ package com.boj.roster;
 import com.boj.jooq.tables.records.UserRecord;
 import com.google.inject.Singleton;
 import org.jooq.DSLContext;
+import org.jooq.Record1;
 
 import javax.inject.Inject;
 
@@ -29,11 +30,13 @@ public class RosterManager {
   }
 
   public Role getRole(UserRecord userRecord) {
-    String role = db.select(ROSTER.ROLE)
+    Record1<String> record = db.select(ROSTER.ROLE)
         .from(ROSTER)
         .where(ROSTER.EMAIL.eq(userRecord.getEmail()))
-        .fetchOne()
-        .value1();
-    return Role.valueOf(role);
+        .fetchOne();
+    if (record == null) {
+      return Role.ALIEN;
+    }
+    return Role.valueOf(record.value1());
   }
 }

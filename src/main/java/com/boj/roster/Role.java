@@ -8,5 +8,6 @@ package com.boj.roster;
  */
 public enum Role {
   ADMIN,
-  STUDENT
+  STUDENT,
+  ALIEN,
 }

@@ -33,7 +33,6 @@ public class PermissionDeniedExceptionHandler implements ExceptionHandler {
     logger.info("User {} does not have permission for request {}.",
         userRecordProvider.get().getEmail(),
         request.pathInfo());
-    response.status(403);
-    response.body("permission denied");
+    response.redirect(ErrorPage.NO_PERMISSION.getPath());
   }
 }

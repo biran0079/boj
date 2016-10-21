@@ -11,10 +11,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import static com.boj.jooq.tables.User.USER;
+
 /**
  * Created by biran on 10/17/16.
  */
 public class UserManager {
+
+  private static final String GUEST_USER_ID = "-1";
 
   private final DSLContext db;
 
@@ -24,13 +28,13 @@ public class UserManager {
   }
 
   public UserRecord getUser(String id) {
-    return db.selectFrom(User.USER)
-        .where(User.USER.ID.eq(id))
+    return db.selectFrom(USER)
+        .where(USER.ID.eq(id))
         .fetchOne();
   }
 
   public UserRecord create(GoogleIdToken.Payload payload) {
-    UserRecord record = db.newRecord(User.USER);
+    UserRecord record = db.newRecord(USER);
     record.setEmail(payload.getEmail());
     record.setId(payload.getSubject());
     record.setName((String) payload.get("name"));
@@ -39,14 +43,21 @@ public class UserManager {
     return record;
   }
 
-
   public Map<String, UserRecord> getUsersByIds(Set<String> userIds) {
     Map<String, UserRecord> userRecordMap = new HashMap<>();
     for (UserRecord record : db.selectFrom(Tables.USER)
-        .where(User.USER.ID.in(userIds))
+        .where(USER.ID.in(userIds))
         .fetch()) {
       userRecordMap.put(record.getId(), record);
     }
     return userRecordMap;
+  }
+
+  public boolean isGuestUser(UserRecord userRecord) {
+    return userRecord.getId().equals(GUEST_USER_ID);
+  }
+
+  public UserRecord getGuestUser() {
+    return getUser(GUEST_USER_ID);
   }
 }

@@ -3,10 +3,10 @@
  */
 package com.boj.submission;
 
+import com.boj.base.DateUtil;
 import com.boj.jooq.tables.records.SubmissionRecord;
 import com.boj.jooq.tables.records.SubmissionViewRecord;
 import com.boj.judge.Verdict;
-import com.boj.base.DateUtil;
 import com.google.inject.Singleton;
 import org.jooq.DSLContext;
 import org.jooq.Record1;
@@ -15,7 +15,6 @@ import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.boj.jooq.Tables.SCHEMA_VERSION;
 import static com.boj.jooq.Tables.SUBMISSION;
 import static com.boj.jooq.Tables.SUBMISSION_VIEW;
 

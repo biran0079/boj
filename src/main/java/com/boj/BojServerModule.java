@@ -4,11 +4,13 @@ import com.boj.annotation.CheckstyleConfigPath;
 import com.boj.annotation.CheckstyleJarPath;
 import com.boj.annotation.IsAdmin;
 import com.boj.annotation.JunitClassPath;
+import com.boj.guice.RequestScope;
 import com.boj.guice.RequestScopeModule;
 import com.boj.jooq.tables.records.UserRecord;
 import com.boj.roster.Role;
 import com.boj.roster.RosterManager;
 import com.google.inject.AbstractModule;
+import com.google.inject.Key;
 import com.google.inject.Provides;
 import com.google.inject.servlet.RequestScoped;
 import org.flywaydb.core.Flyway;
@@ -31,6 +33,7 @@ public class BojServerModule extends AbstractModule {
   @Override
   protected void configure() {
     install(new RequestScopeModule());
+
     bind(UserRecord.class).in(RequestScoped.class);
     bindConstant().annotatedWith(JunitClassPath.class)
         .to(getPath("./junit-4.12.jar") + ":"
