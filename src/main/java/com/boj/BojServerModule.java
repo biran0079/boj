@@ -75,6 +75,7 @@ public class BojServerModule extends AbstractModule {
   Flyway provideFlyway() {
     Flyway flyway = new Flyway();
     flyway.setDataSource(DB_URL, null, null);
+    flyway.setLocations("dbmigration");
     return flyway;
   }
 
