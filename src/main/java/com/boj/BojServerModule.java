@@ -9,8 +9,8 @@ import com.boj.guice.RequestScopeModule;
 import com.boj.jooq.tables.records.UserRecord;
 import com.boj.roster.Role;
 import com.boj.roster.RosterManager;
+import com.boj.user.LoginState;
 import com.google.inject.AbstractModule;
-import com.google.inject.Key;
 import com.google.inject.Provides;
 import com.google.inject.servlet.RequestScoped;
 import org.flywaydb.core.Flyway;
@@ -34,7 +34,6 @@ public class BojServerModule extends AbstractModule {
   protected void configure() {
     install(new RequestScopeModule());
 
-    bind(UserRecord.class).in(RequestScoped.class);
     bindConstant().annotatedWith(JunitClassPath.class)
         .to(getPath("./junit-4.12.jar") + ":"
             + getPath("./hamcrest-core-1.3.jar"));
@@ -50,6 +49,18 @@ public class BojServerModule extends AbstractModule {
       throw new RuntimeException("file " + relativePath + " not found");
     }
     return file.getAbsolutePath();
+  }
+
+  @Provides
+  @RequestScoped
+  UserRecord providesUserRecord(RequestScope requestScope) {
+    return requestScope.get(UserRecord.class);
+  }
+
+  @Provides
+  @RequestScoped
+  LoginState providesLoginState(RequestScope requestScope) {
+    return requestScope.get(LoginState.class);
   }
 
   @Provides

@@ -2,8 +2,6 @@ package com.boj.user;
 
 import com.boj.guice.RequestScope;
 import com.boj.jooq.tables.records.UserRecord;
-import com.boj.roster.Role;
-import com.boj.roster.RosterManager;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.google.api.client.http.apache.ApacheHttpTransport;
@@ -16,7 +14,6 @@ import com.google.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.Nullable;
 import javax.inject.Singleton;
 import java.util.Arrays;
 import java.util.concurrent.ExecutionException;
@@ -78,21 +75,23 @@ public class UserAuthenticator {
   public void authenticateAndSeedUser(String idTokenString) {
     Preconditions.checkNotNull(idTokenString, "idTokenString");
     try {
-      seed(idTokenToUserCache.get(idTokenString));
+      seed(idTokenToUserCache.get(idTokenString), LoginState.OK);
     } catch (ExecutionException e) {
-      log.error("Google authentication failed.", e);
+      log.error("Google authentication failed.");
+      seedGuestUser(LoginState.GOOGLE_AUTH_FAILED);
     }
   }
 
-  public void seedGuestUser() {
-    seed(userManager.getGuestUser());
+  public void seedGuestUser(LoginState loginState) {
+    seed(userManager.getGuestUser(), loginState);
   }
 
-  private void seed(UserRecord userRecord) {
+  private void seed(UserRecord userRecord, LoginState loginState) {
     requestScope.seed(UserRecord.class, userRecord);
+    requestScope.seed(LoginState.class, loginState);
   }
 
-  private static class GoogleAuthException extends Exception {
+  public static class GoogleAuthException extends Exception {
     private static final long serialVersionUID = -1301650153832565472L;
 
     GoogleAuthException(String message) {

@@ -1,7 +1,6 @@
 package com.boj.user;
 
 import com.boj.jooq.Tables;
-import com.boj.jooq.tables.User;
 import com.boj.jooq.tables.records.UserRecord;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.inject.Inject;
@@ -51,10 +50,6 @@ public class UserManager {
       userRecordMap.put(record.getId(), record);
     }
     return userRecordMap;
-  }
-
-  public boolean isGuestUser(UserRecord userRecord) {
-    return userRecord.getId().equals(GUEST_USER_ID);
   }
 
   public UserRecord getGuestUser() {
