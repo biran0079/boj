@@ -2,6 +2,7 @@ package com.boj.user;
 
 import com.boj.guice.RequestScope;
 import com.boj.jooq.tables.records.UserRecord;
+import com.boj.roster.RosterManager;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.google.api.client.http.apache.ApacheHttpTransport;
@@ -25,18 +26,6 @@ import java.util.concurrent.TimeUnit;
 public class UserAuthenticator {
 
   private static final String CLIENT_ID = "496017852143-19a6kjh7mvhlhb0pp4l5fsj5s5empgt8.apps.googleusercontent.com";
-  private static final ImmutableSet<String> USER_WHITE_LIST = ImmutableSet.of(
-      "biran0079@gmail.com",
-      "ran.bi@addepar.com",
-      "seven.frank.chen@gmail.com",
-      "rita.ren.yuxi@gmail.com",
-      "jml901031@gmail.com",
-      "zhaodh89@gmail.com",
-      "jayden.fy@gmail.com",
-      "wanglei5590@gmail.com",
-      "zhongmingmu2015@u.northwestern.edu",
-      "grueo.yjz@gmail.com",
-      "henrywu573@gmail.com");
 
   private Cache<String, UserRecord> authedUser = CacheBuilder.newBuilder()
       .expireAfterWrite(10, TimeUnit.MINUTES)
@@ -54,13 +43,15 @@ public class UserAuthenticator {
 
   private final UserManager userManager;
   private final RequestScope requestScope;
-
+  private final RosterManager rosterManager;
 
   @Inject
   public UserAuthenticator(UserManager userManager,
-                           RequestScope requestScope) {
+                           RequestScope requestScope,
+                           RosterManager rosterManager) {
     this.userManager = userManager;
     this.requestScope = requestScope;
+    this.rosterManager = rosterManager;
   }
 
   public boolean canUse(String idTokenString) throws GeneralSecurityException, IOException {
@@ -70,7 +61,7 @@ public class UserAuthenticator {
         return true;
       }
       GoogleIdToken.Payload payload = idToken.getPayload();
-      if (USER_WHITE_LIST.contains(payload.getEmail())) {
+      if (rosterManager.isInRoster(payload.getEmail())) {
         UserRecord record = userManager.getUser(payload.getSubject());
         if (record == null) {
           record = userManager.create(payload);

@@ -6,6 +6,8 @@ import com.boj.annotation.IsAdmin;
 import com.boj.annotation.JunitClassPath;
 import com.boj.guice.RequestScopeModule;
 import com.boj.jooq.tables.records.UserRecord;
+import com.boj.roster.Role;
+import com.boj.roster.RosterManager;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.servlet.RequestScoped;
@@ -50,8 +52,8 @@ public class BojServerModule extends AbstractModule {
   @Provides
   @RequestScoped
   @IsAdmin
-  boolean providesIsAdmin(UserRecord userRecord) {
-    return userRecord.getEmail().equals("biran0079@gmail.com");
+  boolean providesIsAdmin(RosterManager rosterManager, UserRecord userRecord) {
+    return rosterManager.getRole(userRecord) == Role.ADMIN;
   }
 
   @Provides
