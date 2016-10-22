@@ -3,6 +3,7 @@
  */
 package com.boj.roster;
 
+import com.boj.jooq.tables.Roster;
 import com.boj.jooq.tables.records.RosterRecord;
 import com.boj.jooq.tables.records.UserRecord;
 import com.google.inject.Singleton;
@@ -41,5 +42,19 @@ public class RosterManager {
 
   public List<RosterRecord> getRoster() {
     return db.selectFrom(ROSTER).fetch();
+  }
+
+  public RosterRecord createRosterEntry(String email, Role role) {
+    RosterRecord rosterRecord = db.newRecord(ROSTER);
+    rosterRecord.setEmail(email);
+    rosterRecord.setRole(role.toString());
+    rosterRecord.store();
+    return rosterRecord;
+  }
+
+  public void deleteById(int rosterId) {
+    db.deleteFrom(ROSTER)
+        .where(ROSTER.ID.eq(rosterId))
+        .execute();
   }
 }

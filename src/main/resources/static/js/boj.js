@@ -51,5 +51,26 @@ function signOut() {
     });
 }
 
+function deleteProblem(id) {
+    $.ajax({
+        url: '/problem/' + id,
+        type: 'DELETE',
+        success: function(result) {
+            location.reload();
+        }
+    });
+}
+
+function deleteRoster(id) {
+    $.ajax({
+        url: '/roster/' + id,
+        type: 'DELETE',
+        success: function(result) {
+            location.reload();
+        }
+    });
+}
+
 $(document).ready(function() {
+    $('select').material_select();
 });

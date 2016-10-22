@@ -9,6 +9,7 @@ import com.boj.jooq.tables.records.ProblemRecord;
 import com.boj.jooq.tables.records.SubmissionRecord;
 import com.boj.jooq.tables.records.UserRecord;
 import com.boj.problem.ProblemManager;
+import com.boj.roster.Role;
 import com.boj.roster.RosterManager;
 import com.boj.route.CreateOrUpdateProblemRoute;
 import com.boj.route.GetSubmitRoute;
@@ -132,6 +133,19 @@ public class BojServer {
                 .build(),
             "roster.html"),
         engine);
+    post("/roster", (request, response) -> {
+      String email = request.queryParams("email");
+      Role role = Role.valueOf(request.queryParams("role"));
+      rosterManager.createRosterEntry(email, role);
+      response.redirect("/roster", 303);
+      return "ok";
+    });
+    delete("/roster/:id", (request, response) -> {
+      int rosterId = Integer.valueOf(request.params(":id"));
+      rosterManager.deleteById(rosterId);
+      return "ok";
+    });
+
     get("/problems", (request, response) -> modelAndViewFactory.create(
         MapBuilder.create().put("problems", problemManager.getProblems()).build(),
         "problems.html"), engine);

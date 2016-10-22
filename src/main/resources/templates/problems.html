@@ -1,17 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
 <script>
-    function deleteProblem(id) {
-        $(this).click(function() {
-            $.ajax({
-                url: '/problem/' + id,
-                type: 'DELETE',
-                success: function(result) {
-                    location.reload();
-                }
-            });
-        });
-    }
     $(document).ready(function() {
         $('#problem_file').change(function() {
             console.log('submitting');

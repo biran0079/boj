@@ -7,15 +7,42 @@
         <tr>
             <th>Email</th>
             <th>Role</th>
+            <th>Action</th>
         </tr>
         </thead>
         {% for entry in roster %}
         <tr>
             <td>{{entry.email}}</td>
             <td>{{entry.role}}</td>
+            <td>
+                <a href="#" onclick="deleteRoster({{entry.id}})">
+                    <i class="material-icons left">delete</i>
+                </a>
+            </td>
         </tr>
         {% endfor %}
     </table>
+</div>
+<div class="row">
+    <form id="add-roster-form" action="#" method="post">
+        <div class="row">
+            <div class="input-field col s6">
+                <input placeholder="email" id="email" name="email" type="text">
+                <label for="email">Email</label>
+            </div>
+            <div class="input-field col s3">
+                <select name="role" id="role">
+                    <option value="" disabled selected>Choose a role</option>
+                    <option value="STUDENT">student</option>
+                    <option value="ADMIN">admin</option>
+                </select>
+                <label for="role">Role</label>
+            </div>
+            <a href="#" onclick="$('#add-roster-form').submit()" class="btn-floating btn-large waves-effect waves-light red">
+                <i class="material-icons">add</i>
+            </a>
+        </div>
+    </form>
 </div>
 
 {% endblock %}
