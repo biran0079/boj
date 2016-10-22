@@ -20,61 +20,59 @@
     });
 </script>
 <style>
-.mdl-card__title {
-  color: #fff;
-  height: 100px;
-  background: #003A75;
+.card-action {
+    height: 70px;
 }
-.new_problem {
-    position: fixed;
-    display: block;
-    right: 0;
-    bottom: 0;
-    margin-right: 40px;
-    margin-bottom: 40px;
-    z-index: 900;
-}
-#problem_file {
-    display: none;
+.container {
+    margin-left: 20;
+    margin-right: 20;
+    width: 100%;
+    max-width: 100%;
 }
 </style>
-<div class="mdl-grid">
-    {% for problem in problems  %}
-    <div class="mdl-cell mdl-cell--4-col">
-        <div class="mdl-card mdl-shadow--2dp">
-            <div class="mdl-card__title">
-                <h2 class="mdl-card__title-text">{{ problem.title }}</h2>
-            </div>
-            <div class="mdl-card__supporting-text">
-                {{ problem.description | abbreviate(140) }}
-            </div>
-            <div class="mdl-card__actions mdl-card--border">
-                <a href="/problem/{{problem.id}}" class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">
-                    Solve
-                </a>
-            </div>
-            <div class="mdl-card__menu">
-                {% if admin == true %}
-                    <button onclick="deleteProblem({{problem.id}})" problem-id="{{problem.id}}" class="delete-problem mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect">
-                        <i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">delete</i>
-                    </button>
-                    <button onclick="location.href='/problem/edit/{{problem.id}}'" problem-id="{{problem.id}}" class="edit-problem mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect">
-                        <i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">mode_edit</i>
-                    </button>
-                {% endif %}
+<div class="content">
+    <div class="row">
+        {% for problem in problems  %}
+        <div class="col s3">
+            <div class="card">
+                <div class="card-title-container">
+                    <span class="card-title">{{ problem.title }}</span>
+                </div>
+                <div class="card-content">
+                    <p>{{ problem.description | abbreviate(140) }}</p>
+                </div>
+                <div class="card-action">
+                    <a href="/problem/{{problem.id}}">
+                        Solve
+                    </a>
+                    {% if admin == true %}
+                        <a href="#" onclick="deleteProblem({{problem.id}})">
+                            <i class="material-icons right">delete</i>
+                        </a>
+                        <a href="/problem/edit/{{problem.id}}">
+                            <i class="material-icons right">mode_edit</i>
+                        </a>
+                        <a href="/problem/export/{{problem.id}}">
+                            <i class="material-icons right">file_download</i>
+                        </a>
+                    {% endif %}
+                </div>
             </div>
         </div>
+        {% endfor %}
     </div>
-    {% endfor %}
 </div>
 {% if admin == true %}
-<div class="new_problem">
-    <button onclick="location.href='/problem/create'" class="mdl-button mdl-button--fab mdl-button--primary"><i class="material-icons">add</i></button>
-    <form id="problem_import_form" action="/problem/import" method="post" enctype='multipart/form-data'>
-        <label class="image_input_button mdl-button mdl-js-button mdl-button--fab mdl-button--mini-fab mdl-js-ripple-effect mdl-button--colored">
-            <i class="material-icons">file_upload</i>
-            <input name="problem_file" id="problem_file" type="file" />
-        </label>
+
+<div class="fixed-action-btn vertical" style="bottom: 45px; right: 24px;">
+    <a href="/problem/create" class="btn-floating btn-large red">
+        <i class="large material-icons">add</i>
+    </a>
+    <ul>
+        <li><a onclick="$('#problem_file').click()" class="btn-floating blue"><i class="material-icons">attach_file</i></a></li>
+    </ul>
+    <form id="problem_import_form" style="display:none" action="/problem/import" method="post" enctype='multipart/form-data'>
+        <input name="problem_file" id="problem_file" type="file" />
     </form>
 </div>
 {% endif %}

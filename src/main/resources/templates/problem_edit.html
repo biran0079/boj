@@ -41,19 +41,26 @@ function createOrUpdateProblem() {
 }
 </script>
 <div class="content">
-    <div class="mdl-textfield mdl-js-textfield">
-        <input class="mdl-textfield__input" id="problem-title" type="text" value="{{problem.title}}">
-        <label class="mdl-textfield__label" for="problem-title">Title</label>
+    <div class="row">
+        <div class="row">
+            <div class="input-field col s6">
+                <input id="problem-title" type="text" value="{{problem.title}}">
+                <label for="problem-title">Totle</label>
+            </div>
+        </div>
+        <div class="row">
+            <h5>Description</h5>
+            <div class="editor" id="description-editor">{{problem.description}}</div>
+        </div>
+        <div class="row">
+            <h5>Template</h5>
+            <div class="editor" id="template-editor">{{problem.templateSrc}}</div>
+        </div>
+        <div class="row">
+            <h5>Test</h5>
+            <div class="editor" id="test-editor">{{problem.junitTestSrc}}</div>
+        </div>
+        <a onclick="createOrUpdateProblem()" class="waves-effect waves-light btn"><i class="material-icons left">save</i>save</a>
     </div>
-    <h5>Description</h5>
-    <div class="editor" id="description-editor">{{problem.description}}</div>
-    <h5>Template</h5>
-    <div class="editor" id="template-editor">{{problem.templateSrc}}</div>
-    <h5>Test</h5>
-    <div class="editor" id="test-editor">{{problem.junitTestSrc}}</div>
-    <button onclick="createOrUpdateProblem()"
-            class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
-        {{button}}
-    </button>
 </div>
 {% endblock %}

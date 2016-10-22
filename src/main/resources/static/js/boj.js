@@ -25,15 +25,15 @@ var onSignIn = function (googleUser) {
 }
 
 function onLoad() {
-    gapi.signin2.render('my-signin2', {
+    gapi.signin2.render('g-signin', {
         'scope': 'profile email',
         'width': 208,
         'height': 45,
         'longtitle': true,
-        'theme': 'dark',
+        'theme': 'light',
         'onsuccess': onSignIn,
         'onfailure': function (error) {
-         console.log(error);
+            console.log(error);
         }
     });
 }
@@ -50,3 +50,6 @@ function signOut() {
         });
     });
 }
+
+$(document).ready(function() {
+});

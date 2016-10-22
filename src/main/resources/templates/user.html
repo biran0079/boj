@@ -2,25 +2,27 @@
 
 {% block content %}
 <style>
-.profile-card.mdl-card {
+.card {
   width: 400px;
-  height: 240px;
 }
-.profile-card > .mdl-card__title {
-  color: #fff;
+.card-image {
+  width: 400px;
+  height: 200px;
   background:
     url('{{user.imageUrl}}') bottom 15% right 15% no-repeat #46B6AC;
 }
 </style>
+
 <div class="content">
-    <div class="profile-card mdl-card mdl-shadow--2dp">
-        <div class="mdl-card__title mdl-card--expand">
-            <h2 class="mdl-card__title-text">{{user.name}}</h2>
+    <div class="card">
+        <div class="card-image">
+            <span class="card-title">{{user.name}}</span>
         </div>
-        <div class="mdl-card__supporting-text">
+        <div class="card-content">
+
         </div>
-        <div class="mdl-card__actions mdl-card--border">
-            <a href="/submits?user_id={{user.id}}" class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">
+        <div class="card-action">
+            <a href="/submits?user_id={{user.id}}">
                 All Submissions
             </a>
         </div>
@@ -28,23 +30,25 @@
     <h5>Recent Submissions</h5>
     {% include "submissions_content.html" %}
     <h5>Recent Updates</h5>
-    <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
-        {% for submission_view in submission_views %}
-        {% set record = submission_view.record %}
-        {% set viewer = submission_view.viewer %}
-        {% set datetime = submission_view.datetime %}
-        <tr>
-            <td class="mdl-data-table__cell--non-numeric">
-                <span class="mdl-chip mdl-chip--contact">
-                    <img class="mdl-chip__contact" src="{{viewer.imageUrl}}">
-                    <a href="/user/{{user.id}}"><span class="mdl-chip__text">{{viewer.name}}</span></a>
-                </span>
-                viewed your submission
-                <a href="/submit/{{record.submissionId}}">#{{record.submissionId}}</a>
-                at {{datetime}}
-            </td>
-        </tr>
-        {% endfor %}
-    </table>
+    <div class="content z-depth-3">
+        <table>
+            {% for submission_view in submission_views %}
+            {% set record = submission_view.record %}
+            {% set viewer = submission_view.viewer %}
+            {% set datetime = submission_view.datetime %}
+            <tr>
+                <td>
+                    <div class="chip">
+                        <img src="{{viewer.imageUrl}}" alt="Contact Person">
+                        <a href="/user/{{viewer.id}}">{{viewer.name}}</a>
+                    </div>
+                    viewed your submission
+                    <a href="/submit/{{record.submissionId}}">#{{record.submissionId}}</a>
+                    at {{datetime}}
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
 </div>
 {% endblock %}

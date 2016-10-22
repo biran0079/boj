@@ -3,78 +3,68 @@
     <meta name="google-signin-client_id" content="496017852143-19a6kjh7mvhlhb0pp4l5fsj5s5empgt8.apps.googleusercontent.com">
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="description" content="A front-end template that helps you build fast, modern mobile web apps.">
+    <meta name="description" content="Yet another online judge.">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
-    <title>boj</title>
-
-    <!-- Add to homescreen for Chrome on Android -->
-    <meta name="mobile-web-app-capable" content="yes">
-
-    <!-- Add to homescreen for Safari on iOS -->
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black">
-    <meta name="apple-mobile-web-app-title" content="boj">
-
-    <!-- Tile icon for Win8 (144x144 + tile color) -->
-    <meta name="msapplication-TileColor" content="#3372DF">
+    <title>fancy-coder</title>
 
     <link rel="shortcut icon" href="images/favicon.ico">
 
-    <!-- SEO: If your mobile URL is different from the desktop URL, add a canonical link to the desktop page https://developers.google.com/webmasters/smartphone-sites/feature-phones -->
-    <!--
-    <link rel="canonical" href="http://www.example.com/">
-    -->
-
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:regular,bold,italic,thin,light,bolditalic,black,medium&lang=en">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-    <link rel="stylesheet" href="https://code.getmdl.io/1.2.1/material.red-blue.min.css" />
     <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.7/css/materialize.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
     <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
     <script src="/js/boj.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.7/js/materialize.min.js"></script>
     <script src="https://apis.google.com/js/platform.js?onload=onLoad" async defer></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.5/ace.js" type="text/javascript" charset="utf-8"></script>
+    </body>
 </head>
 <body>
-<div class="demo-layout mdl-layout mdl-js-layout mdl-layout--fixed-drawer mdl-layout--fixed-header">
 
-    <div class="demo-drawer mdl-layout__drawer mdl-color--blue-grey-900 mdl-color-text--blue-grey-50">
-        <header class="demo-drawer-header">
-            {% if state == "OK" %}
-                <img src="{{me.imageUrl}}" class="demo-avatar">
-                <div class="demo-avatar-dropdown">
-                    <span>{{me.email}}</span>
-                    <div class="mdl-layout-spacer"></div>
-                </div>
-            {% else %}
-                {% if state == "GOOGLE_AUTH_FAILED" %}
-                     <script>
-                        onSignIn = function() {
-                            console.log('signing out in 3 sec');
-                            setTimeout(signOut, 3000);
-                        };
-                    </script>
-                    <span>Google authentication failed. Signing out in 3 secs.</span>
-                {% endif %}
-                <div id="my-signin2"></div>
-            {% endif %}
-        </header>
-        <nav class="demo-navigation mdl-navigation mdl-color--blue-grey-800">
-            <a class="mdl-navigation__link" href="/problems"><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">assignment</i>Problems</a>
-            <a class="mdl-navigation__link" href="/submits"><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">done_all</i>Submissions</a>
-            {% if admin == true %}
-                <a class="mdl-navigation__link" href="/roster"><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">people</i>Roster</a>
-            {% endif %}
-            {% if me is not empty %}
-                <div class="mdl-layout-spacer"></div>
-                <a onclick="signOut()" class="mdl-navigation__link" href="#"><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">exit_to_app</i></a>
-            {% endif %}
-        </nav>
-    </div>
-    <main class="mdl-layout__content mdl-color--grey-100">
-        {% block content %} {% endblock %}
-    </main>
+<ul id="nav-mobile" class="side-nav fixed">
+    <li><div class="userView">
+        <img class="background" src="/images/login_bg.jpg">
+        {% if state == "OK" %}
+        <a href="#!user"><img class="circle" src="{{me.imageUrl}}"></a>
+        <a href="#!name"><span class="white-text name">{{me.name}}</span></a>
+        <a href="#!email"><span class="white-text email">{{me.email}}</span></a>
+        {% else %}
+        {% if state == "GOOGLE_AUTH_FAILED" %}
+        <script>
+                    onSignIn = function() {
+                        console.log('signing out in 3 sec');
+                        setTimeout(signOut, 3000);
+                    };
+                </script>
+        <span>Google authentication failed. Signing out in 3 secs.</span>
+        {% endif %}
+        <div id="g-signin"></div>
+        {% endif %}
+    </div></li>
+
+    <li>
+        <a href="/problems"><i class="material-icons">assignment</i>problems</a>
+    </li>
+    <li>
+        <a href="/submits"><i class="material-icons">done_all</i>submissions</a>
+    </li>
+    {% if admin == true %}
+    <li><div class="divider"></div></li>
+    <li><a class="subheader">Addmin</a></li>
+    <li>
+        <a href="/roster"><i class="material-icons">people</i>roster</a>
+    </li>
+    {% endif %}
+    {% if state != "NOT_LOGGED_IN" %}
+    <li><div class="divider"></div></li>
+    <li>
+        <a onclick="signOut()" href="#"><i class="material-icons">exit_to_app</i>sign out</a>
+    </li>
+    {% endif %}
+</ul>
+<div class="container">
+{% block content %} {% endblock %}
 </div>
-<script src="https://code.getmdl.io/1.2.1/material.min.js"></script>
-</body>
+
 </html>
