@@ -11,10 +11,7 @@ import com.boj.jooq.tables.records.UserRecord;
 import com.boj.problem.ProblemManager;
 import com.boj.roster.Role;
 import com.boj.roster.RosterManager;
-import com.boj.route.CreateOrUpdateProblemRoute;
-import com.boj.route.GetSubmitRoute;
-import com.boj.route.SubmitRoute;
-import com.boj.route.UserRoute;
+import com.boj.route.*;
 import com.boj.submission.SubmissionManager;
 import com.boj.user.UserManager;
 import com.google.api.client.repackaged.com.google.common.base.Strings;
@@ -63,6 +60,7 @@ public class BojServer {
   private final AuthenticationFilter authFilter;
   private final AccessControlFilter accessControlFilter;
   private final RosterManager rosterManager;
+  private final LeaderBoardRoute leaderBoardRoute;
   private final Provider<Boolean> isAdmin;
 
   @Inject
@@ -80,6 +78,7 @@ public class BojServer {
                    AuthenticationFilter authFilter,
                    AccessControlFilter accessControlFilter,
                    RosterManager rosterManager,
+                   LeaderBoardRoute leaderBoardRoute,
                    @IsAdmin Provider<Boolean> isAdmin) {
     this.flyway = flyway;
     this.createOrUpdateProblemRoute = createOrUpdateProblemRoute;
@@ -95,6 +94,7 @@ public class BojServer {
     this.authFilter = authFilter;
     this.accessControlFilter = accessControlFilter;
     this.rosterManager = rosterManager;
+    this.leaderBoardRoute = leaderBoardRoute;
     this.isAdmin = isAdmin;
   }
 
@@ -122,6 +122,7 @@ public class BojServer {
 
     get("/", (req, resp) -> modelAndViewFactory.create(new HashMap<>(), "index.html"), engine);
 
+    get("/leader_board", leaderBoardRoute, engine);
     get("/error", (req, resp) -> modelAndViewFactory.create(MapBuilder.create()
         .put("message", ErrorPage.fromString(req.queryParams("reason")).getMessage())
         .build(), "error.html"), engine);

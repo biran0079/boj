@@ -3,7 +3,6 @@
  */
 package com.boj.roster;
 
-import com.boj.jooq.tables.Roster;
 import com.boj.jooq.tables.records.RosterRecord;
 import com.boj.jooq.tables.records.UserRecord;
 import com.google.inject.Singleton;
@@ -11,7 +10,6 @@ import org.jooq.DSLContext;
 import org.jooq.Record1;
 
 import javax.inject.Inject;
-
 import java.util.List;
 
 import static com.boj.jooq.tables.Roster.ROSTER;
@@ -42,6 +40,12 @@ public class RosterManager {
 
   public List<RosterRecord> getRoster() {
     return db.selectFrom(ROSTER).fetch();
+  }
+
+  public List<RosterRecord> getRoster(Role role) {
+    return db.selectFrom(ROSTER)
+        .where(ROSTER.ROLE.eq(role.toString()))
+        .fetch();
   }
 
   public RosterRecord createRosterEntry(String email, Role role) {

@@ -7,6 +7,7 @@ import com.boj.base.DateUtil;
 import com.boj.jooq.tables.records.SubmissionRecord;
 import com.boj.jooq.tables.records.SubmissionViewRecord;
 import com.boj.judge.Verdict;
+import com.boj.user.UserManager;
 import com.google.inject.Singleton;
 import org.jooq.DSLContext;
 import org.jooq.Record1;
@@ -25,10 +26,13 @@ import static com.boj.jooq.Tables.SUBMISSION_VIEW;
 public class SubmissionManager {
 
   private final DSLContext db;
+  private final UserManager userManager;
 
   @Inject
-  public SubmissionManager(DSLContext db) {
+  public SubmissionManager(DSLContext db,
+                           UserManager userManager) {
     this.db = db;
+    this.userManager = userManager;
   }
 
   public SubmissionRecord createSubmission(int problemId, String userId, String solution, Verdict verdict) {
@@ -43,11 +47,30 @@ public class SubmissionManager {
   }
 
   public void updateVerdictAndMessage(int submissionId, Verdict verdict, String message) {
-    db.update(SUBMISSION)
-        .set(SUBMISSION.VERDICT, verdict.toString())
-        .set(SUBMISSION.MESSAGE, message)
-        .where(SUBMISSION.ID.eq(submissionId))
-        .execute();
+    SubmissionRecord record = getSubmissionById(submissionId);
+    if (verdict == Verdict.ACCEPTED) {
+      if (!hasSubmission(record.getProblemId(), record.getUserId(), Verdict.ACCEPTED)) {
+        // first time solving the problem
+        userManager.updateScore(record.getUserId(), 10);
+      }
+    } else {
+      userManager.updateScore(record.getUserId(), -2);
+    }
+
+    record.setVerdict(verdict.toString());
+    record.setMessage(message);
+    record.store();
+  }
+
+  public boolean hasSubmission(Integer problemId, String userId, Verdict verdict) {
+    SubmissionRecord record = db.selectFrom(SUBMISSION)
+        .where(
+            SUBMISSION.USER_ID.eq(userId),
+            SUBMISSION.PROBLEM_ID.eq(problemId),
+            SUBMISSION.VERDICT.eq(verdict.toString()))
+        .limit(1)
+        .fetchAny();
+    return record != null;
   }
 
   public SubmissionRecord getSubmissionById(int submissionId) {

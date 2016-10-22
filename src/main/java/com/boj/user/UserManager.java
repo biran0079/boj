@@ -7,6 +7,7 @@ import com.google.inject.Inject;
 import org.jooq.DSLContext;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -54,5 +55,17 @@ public class UserManager {
 
   public UserRecord getGuestUser() {
     return getUser(GUEST_USER_ID);
+  }
+
+  public List<UserRecord> getUsersByEmails(List<String> emails) {
+    return db.selectFrom(USER)
+        .where(USER.EMAIL.in(emails))
+        .fetch();
+  }
+
+  public void updateScore(String userId, int scoreDiff) {
+    UserRecord record = getUser(userId);
+    record.setScore(Math.max(0, record.getScore() + scoreDiff));
+    record.store();
   }
 }

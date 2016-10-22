@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="content z-depth-3">
+    <table>
+        <thead>
+        <tr>
+            <th>User</th>
+            <th>Score</th>
+        </tr>
+        </thead>
+        {% for user in users %}
+        <tr>
+            <td>
+                <div class="chip">
+                    <img src="{{user.imageUrl}}" alt="Contact Person">
+                    <a href="/user/{{user.id}}">{{user.name}}</a>
+                </div>
+            </td>
+            <td>{{user.score}}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+
+
+{% endblock %}

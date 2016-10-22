@@ -6,16 +6,19 @@
 {% if verdict == "PENDING" %}
     setTimeout(function() {
         location.reload();
-    }, 1000);
+    }, 2000);
 {% endif %}
-    $(document).ready(function() {
-        var solutionEditor = ace.edit("solution-editor");
-        solutionEditor.setTheme("ace/theme/monokai");
-        solutionEditor.setFontSize(14);
-        solutionEditor.setShowPrintMargin(false);
-        solutionEditor.getSession().setMode("ace/mode/java");
-        solutionEditor.setReadOnly(true);
+$(document).ready(function() {
+    var editor = ace.edit("solution-editor");
+    editor.setTheme("ace/theme/monokai");
+    editor.setFontSize(14);
+    editor.setShowPrintMargin(false);
+    editor.getSession().setMode("ace/mode/java");
+    editor.setReadOnly(true);
+    editor.setOptions({
+        maxLines: Infinity
     });
+});
 </script>
 <div class="content">
     <div class="card">
@@ -25,6 +28,12 @@
         {% if message is not empty %}
             <div class="card-content">
                 <pre>{{message}}</pre>
+            </div>
+        {% elseif verdict == "PENDING" %}
+            <div class="card-content">
+                <div class="progress">
+                    <div class="indeterminate"></div>
+                </div>
             </div>
         {% endif %}
     </div>
