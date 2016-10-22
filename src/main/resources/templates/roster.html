@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="content">
+    <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
+        <thead>
+        <tr>
+            <th class="mdl-data-table__cell--non-numeric">Email</th>
+            <th class="mdl-data-table__cell--non-numeric">Role</th>
+        </tr>
+        </thead>
+        {% for entry in roster %}
+        <tr>
+            <td class="mdl-data-table__cell--non-numeric">{{entry.email}}</td>
+            <td class="mdl-data-table__cell--non-numeric">{{entry.role}}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+
+{% endblock %}

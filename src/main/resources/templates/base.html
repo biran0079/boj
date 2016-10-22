@@ -62,6 +62,9 @@
         <nav class="demo-navigation mdl-navigation mdl-color--blue-grey-800">
             <a class="mdl-navigation__link" href="/problems"><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">assignment</i>Problems</a>
             <a class="mdl-navigation__link" href="/submits"><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">done_all</i>Submissions</a>
+            {% if admin == true %}
+                <a class="mdl-navigation__link" href="/roster"><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">people</i>Roster</a>
+            {% endif %}
             {% if me is not empty %}
                 <div class="mdl-layout-spacer"></div>
                 <a onclick="signOut()" class="mdl-navigation__link" href="#"><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">exit_to_app</i></a>

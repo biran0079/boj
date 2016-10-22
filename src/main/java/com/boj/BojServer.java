@@ -9,6 +9,7 @@ import com.boj.jooq.tables.records.ProblemRecord;
 import com.boj.jooq.tables.records.SubmissionRecord;
 import com.boj.jooq.tables.records.UserRecord;
 import com.boj.problem.ProblemManager;
+import com.boj.roster.RosterManager;
 import com.boj.route.CreateOrUpdateProblemRoute;
 import com.boj.route.GetSubmitRoute;
 import com.boj.route.SubmitRoute;
@@ -60,6 +61,7 @@ public class BojServer {
   private final PermissionDeniedExceptionHandler permissionDeniedExceptionHandler;
   private final AuthenticationFilter authFilter;
   private final AccessControlFilter accessControlFilter;
+  private final RosterManager rosterManager;
   private final Provider<Boolean> isAdmin;
 
   @Inject
@@ -76,6 +78,7 @@ public class BojServer {
                    PermissionDeniedExceptionHandler permissionDeniedExceptionHandler,
                    AuthenticationFilter authFilter,
                    AccessControlFilter accessControlFilter,
+                   RosterManager rosterManager,
                    @IsAdmin Provider<Boolean> isAdmin) {
     this.flyway = flyway;
     this.createOrUpdateProblemRoute = createOrUpdateProblemRoute;
@@ -90,6 +93,7 @@ public class BojServer {
     this.permissionDeniedExceptionHandler = permissionDeniedExceptionHandler;
     this.authFilter = authFilter;
     this.accessControlFilter = accessControlFilter;
+    this.rosterManager = rosterManager;
     this.isAdmin = isAdmin;
   }
 
@@ -121,6 +125,13 @@ public class BojServer {
         .put("message", ErrorPage.fromString(req.queryParams("reason")).getMessage())
         .build(), "error.html"), engine);
 
+    get("/roster", (request, response) ->
+        modelAndViewFactory.create(
+            MapBuilder.create()
+                .put("roster", rosterManager.getRoster())
+                .build(),
+            "roster.html"),
+        engine);
     get("/problems", (request, response) -> modelAndViewFactory.create(
         MapBuilder.create().put("problems", problemManager.getProblems()).build(),
         "problems.html"), engine);
