@@ -25,10 +25,6 @@ public class RosterManager {
     this.db = db;
   }
 
-  public boolean isInRoster(String email) {
-    return db.selectFrom(ROSTER).where(ROSTER.EMAIL.eq(email)).fetchAny() != null;
-  }
-
   public Role getRole(UserRecord userRecord) {
     Record1<String> record = db.select(ROSTER.ROLE)
         .from(ROSTER)

@@ -1,17 +1,26 @@
 
-function setCookie(sName,sValue) {
-    var oDate = new Date();
-    oDate.setYear(oDate.getFullYear() + 1);
-    var sCookie = encodeURIComponent(sName) + '=' + encodeURIComponent(sValue) + ';expires=' + oDate.toGMTString() + ';path=/';
+function setCookie(sName,sValue, expiresAt) {
+    var date;
+    if (expiresAt) {
+        date = new Date(expiresAt)
+    } else {
+        date = new Date();
+        date.setMonth(date.getMonth() + 1);
+    }
+    var sCookie = encodeURIComponent(sName) + '=' + encodeURIComponent(sValue) + ';expires=' + date.toGMTString() + ';path=/';
     document.cookie = sCookie;
 }
+
 function delete_cookie(name) {
   document.cookie = name +'=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
 }
+
 var onSignIn = function (googleUser) {
   console.log("signed in");
-  var id_token = googleUser.getAuthResponse().id_token;
-  setCookie('id_token', id_token);
+  var authResp = googleUser.getAuthResponse();
+  var idToken = authResp.id_token;
+  var expiresAt = authResp.expires_at;
+  setCookie('id_token', idToken, expiresAt);
   location.reload();
 }
 
