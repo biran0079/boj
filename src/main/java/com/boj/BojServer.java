@@ -126,14 +126,21 @@ public class BojServer {
         .put("message", ErrorPage.fromString(req.queryParams("reason")).getMessage())
         .build(), "error.html"), engine);
 
-    get("/roster", (request, response) ->
-        modelAndViewFactory.create(
+    get("/roster", (request, response) ->{
+        if (!isAdmin.get()) {
+          throw new PermissionDeniedException();
+        }
+        return modelAndViewFactory.create(
             MapBuilder.create()
                 .put("roster", rosterManager.getRoster())
                 .build(),
-            "roster.html"),
+            "roster.html");
+    },
         engine);
     post("/roster", (request, response) -> {
+      if (!isAdmin.get()) {
+        throw new PermissionDeniedException();
+      }
       String email = request.queryParams("email");
       Role role = Role.valueOf(request.queryParams("role"));
       rosterManager.createRosterEntry(email, role);
@@ -141,6 +148,9 @@ public class BojServer {
       return "ok";
     });
     delete("/roster/:id", (request, response) -> {
+      if (!isAdmin.get()) {
+        throw new PermissionDeniedException();
+      }
       int rosterId = Integer.valueOf(request.params(":id"));
       rosterManager.deleteById(rosterId);
       return "ok";

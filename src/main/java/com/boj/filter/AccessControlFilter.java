@@ -9,6 +9,7 @@ import com.boj.roster.Role;
 import com.boj.roster.RosterManager;
 import com.boj.user.UserAuthenticator;
 import com.boj.user.UserManager;
+import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
@@ -40,14 +41,9 @@ public class AccessControlFilter implements Filter {
   private final UserManager userManager;
   private final RosterManager rosterManager;
 
-  private final LoadingCache<String, Boolean> userIdToRolwCache = CacheBuilder.newBuilder()
+  private final Cache<String, Boolean> userIdToRolwCache = CacheBuilder.newBuilder()
       .expireAfterWrite(10, TimeUnit.MINUTES)
-      .build(new CacheLoader<String, Boolean>() {
-        @Override
-        public Boolean load(String userId) throws Exception {
-          return rosterManager.getRole(userManager.getUser(userId)) != Role.ALIEN;
-        }
-      });
+      .build();
 
   @Inject
   AccessControlFilter(Provider<UserRecord> userRecordProvider,
@@ -72,9 +68,12 @@ public class AccessControlFilter implements Filter {
     UserRecord userRecord;
     try {
       userRecord = userRecordProvider.get();
-      if (userIdToRolwCache.get(userRecord.getId())) {
-        return true;
+      Boolean hasAccess = userIdToRolwCache.getIfPresent(userRecord.getId());
+      if (hasAccess == null || hasAccess == false) {
+        hasAccess = rosterManager.getRole(userRecord) != Role.ALIEN;
+        userIdToRolwCache.put(userRecord.getId(), hasAccess);
       }
+      return hasAccess;
     } catch (Exception e) {
       log.error("Failed to get used record.", e);
     }
