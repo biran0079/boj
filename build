@@ -1,0 +1,7 @@
+#!/bin/bash
+set -e
+./migrate
+./jooq
+version_suffix=$(echo 'version-${project.version}' | mvn org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate | grep '^version')
+mvn clean package
+zip boj-${version_suffix}.zip run junit-4.12.jar hamcrest-core-1.3.jar checkstyle-7.1.2-all.jar boj_check.xml target/*-fat.jar
