@@ -26,7 +26,7 @@ function submitSolution() {
             <span class="card-title">{{ problem.title }}</span>
         </div>
         <div class="card-content">
-            <p>{{ problem.description }}</p>
+            {{ problem.description | raw }}
         </div>
     </div>
     <div class="editor">

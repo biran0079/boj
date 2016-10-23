@@ -34,7 +34,7 @@
                     <span class="card-title">{{ problem.title }}</span>
                 </div>
                 <div class="card-content">
-                    <p>{{ problem.description | abbreviate(140) }}</p>
+                    {{ problem.description | abbreviate(140) | raw }}
                 </div>
                 <div class="card-action">
                     <a href="/problem/{{problem.id}}">
