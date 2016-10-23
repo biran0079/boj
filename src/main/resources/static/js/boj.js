@@ -71,6 +71,22 @@ function deleteRoster(id) {
     });
 }
 
+function initEditor(elem) {
+    editor = CodeMirror.fromTextArea(elem, {
+        lineNumbers: true,
+        mode: "text/x-java",
+        matchBrackets: true,
+        tabSize: 2,
+        extraKeys: {
+            "Tab": function(cm){
+                cm.replaceSelection("  " , "end");
+            }
+        }
+    });
+    editor.setSize('100%', '100%');
+    return editor;
+}
+
 $(document).ready(function() {
     $('select').material_select();
 });

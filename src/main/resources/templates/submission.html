@@ -9,15 +9,8 @@
     }, 2000);
 {% endif %}
 $(document).ready(function() {
-    var editor = ace.edit("solution-editor");
-    editor.setTheme("ace/theme/monokai");
-    editor.setFontSize(14);
-    editor.setShowPrintMargin(false);
-    editor.getSession().setMode("ace/mode/java");
-    editor.setReadOnly(true);
-    editor.setOptions({
-        maxLines: Infinity
-    });
+    editor = initEditor($('#solution-editor')[0]);
+    editor.setOption('readOnly', true);
 });
 </script>
 <div class="content">
@@ -37,7 +30,9 @@ $(document).ready(function() {
             </div>
         {% endif %}
     </div>
-    <div class="editor" id="solution-editor">{{source}}</div>
+    <div class="editor">
+        <textarea id="solution-editor">{{source}}</textarea>
+    </div>
 </div>
 {% endblock %}
 

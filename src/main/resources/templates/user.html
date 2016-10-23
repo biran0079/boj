@@ -27,9 +27,8 @@
             </a>
         </div>
     </div>
-    <h5>Recent Submissions</h5>
     {% include "submissions_content.html" %}
-    <h5>Recent Updates</h5>
+    {% if submission_views.size > 0 %}
     <div class="content z-depth-3">
         <table>
             {% for submission_view in submission_views %}
@@ -50,5 +49,6 @@
             {% endfor %}
         </table>
     </div>
+    {% endif %}
 </div>
 {% endblock %}

@@ -3,17 +3,13 @@
 {% block content %}
 
 <script>
+var editor;
 $(document).ready(function() {
-    var solutionEditor = ace.edit("solution-editor");
-    solutionEditor.setTheme("ace/theme/monokai");
-    solutionEditor.setFontSize(16);
-    solutionEditor.setShowPrintMargin(false);
-    solutionEditor.getSession().setMode("ace/mode/java");
-    solutionEditor.getSession().setTabSize(2);
+    editor = initEditor($('#solution-editor')[0]);
 });
 
 function submitSolution() {
-    var solution = ace.edit("solution-editor").getValue();
+    var solution = editor.doc.getValue();
     $.post('/submit/{{problem.id}}', {
         solution: solution
     },
@@ -25,7 +21,6 @@ function submitSolution() {
 </script>
 <iframe id="for_download" style="display:none;"></iframe>
 <div class="content">
-
     <div class="card">
         <div class="card-title-container">
             <span class="card-title">{{ problem.title }}</span>
@@ -34,8 +29,9 @@ function submitSolution() {
             <p>{{ problem.description }}</p>
         </div>
     </div>
-
-    <div class="editor" id="solution-editor">{{problem.templateSrc}}</div>
+    <div class="editor">
+        <textarea id="solution-editor">{{problem.templateSrc}}</textarea>
+    </div>
     <a onclick="submitSolution()" class="waves-effect waves-light btn">submit</a>
 </div>
 {% endblock %}

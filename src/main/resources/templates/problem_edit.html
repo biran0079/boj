@@ -2,30 +2,22 @@
 
 {% block content %}
 <script>
+var descriptionEditor;
+var templateEditor;
+var testEditor;
+
 $(document).ready(function() {
-    var descriptionEditor = ace.edit("description-editor");
-    descriptionEditor.setTheme("ace/theme/monokai");
-    descriptionEditor.setFontSize(14);
-    descriptionEditor.setShowPrintMargin(false);
-    descriptionEditor.getSession().setMode("ace/mode/html");
+    descriptionEditor = initEditor($("#description-editor")[0]);
+    templateEditor = initEditor($("#template-editor")[0]);
+    testEditor = initEditor($("#test-editor")[0]);
 
-    var templateEditor = ace.edit("template-editor");
-    templateEditor.setTheme("ace/theme/monokai");
-    templateEditor.setFontSize(14);
-    templateEditor.setShowPrintMargin(false);
-    templateEditor.getSession().setMode("ace/mode/java");
-
-    var testEditor = ace.edit("test-editor");
-    testEditor.setTheme("ace/theme/monokai");
-    testEditor.setFontSize(14);
-    testEditor.setShowPrintMargin(false);
-    testEditor.getSession().setMode("ace/mode/java");
+    descriptionEditor.setOption('mode', 'text/html');
 });
 
 function createOrUpdateProblem() {
-    var description = ace.edit("description-editor").getValue();
-    var template = ace.edit("template-editor").getValue();
-    var test = ace.edit("test-editor").getValue();
+    var description = descriptionEditor.doc.getValue();
+    var template = templateEditor.doc.getValue();
+    var test = testEditor.doc.getValue();
     var title = $('#problem-title').val();
     var id = "{{problem.id}}";
     $.post('/problem', {
@@ -50,15 +42,21 @@ function createOrUpdateProblem() {
         </div>
         <div class="row">
             <h5>Description</h5>
-            <div class="editor" id="description-editor">{{problem.description}}</div>
+            <div class="editor">
+                <textarea id="description-editor">{{problem.description}}</textarea>
+            </div>
         </div>
         <div class="row">
             <h5>Template</h5>
-            <div class="editor" id="template-editor">{{problem.templateSrc}}</div>
+            <div class="editor">
+                <textarea id="template-editor">{{problem.templateSrc}}</textarea>
+            </div>
         </div>
         <div class="row">
             <h5>Test</h5>
-            <div class="editor" id="test-editor">{{problem.junitTestSrc}}</div>
+            <div class="editor">
+                <textarea id="test-editor">{{problem.junitTestSrc}}</textarea>
+            </div>
         </div>
         <a onclick="createOrUpdateProblem()" class="waves-effect waves-light btn"><i class="material-icons left">save</i>save</a>
     </div>
