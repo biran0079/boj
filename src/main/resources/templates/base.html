@@ -30,21 +30,11 @@
     <li><div class="userView">
         <img class="background" src="/images/login_bg.jpg">
         {% if state == "OK" %}
-        <a href="/user/{{me.id}}"><img class="circle" src="{{me.imageUrl}}"></a>
-        <span class="white-text name">{{me.name}}</span>
-        <span class="white-text email">{{me.email}}</span>
-        {% else %}
-        {% if state == "GOOGLE_AUTH_FAILED" %}
-        <script>
-                    onSignIn = function() {
-                        console.log('signing out in 3 sec');
-                        setTimeout(signOut, 3000);
-                    };
-                </script>
-        <span>Google authentication failed. Signing out in 3 secs.</span>
+            <a href="/user/{{me.id}}"><img class="circle" src="{{me.imageUrl}}"></a>
+            <span class="white-text name">{{me.name}}</span>
+            <span class="white-text email">{{me.email}}</span>
         {% endif %}
         <div id="g-signin"></div>
-        {% endif %}
     </div></li>
 
     <li>

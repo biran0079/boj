@@ -11,8 +11,16 @@ function setCookie(sName,sValue, expiresAt) {
     document.cookie = sCookie;
 }
 
-function delete_cookie(name) {
+function deleteCookie(name) {
   document.cookie = name +'=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+}
+
+function getCookie(name) {
+  var value = "; " + document.cookie;
+  var parts = value.split("; " + name + "=");
+  if (parts.length == 2) {
+    return parts.pop().split(";").shift();
+  }
 }
 
 var onSignIn = function (googleUser) {
@@ -20,8 +28,10 @@ var onSignIn = function (googleUser) {
   var authResp = googleUser.getAuthResponse();
   var idToken = authResp.id_token;
   var expiresAt = authResp.expires_at;
-  setCookie('id_token', idToken, expiresAt);
-  location.reload();
+  if (getCookie('id_token') != idToken) {
+      setCookie('id_token', idToken, expiresAt);
+      location.reload();
+  }
 }
 
 function onLoad() {
@@ -39,7 +49,7 @@ function onLoad() {
 }
 
 function signOut() {
-    delete_cookie('id_token');
+    deleteCookie('id_token');
     gapi.load('auth2', function() {
         var auth2 = gapi.auth2.init();
         auth2.then(function () {
