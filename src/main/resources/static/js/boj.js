@@ -25,13 +25,20 @@ function getCookie(name) {
 
 var onSignIn = function (googleUser) {
   console.log("signed in");
+  if (setIdTokenCookie(googleUser)) {
+      location.reload();
+  }
+}
+
+function setIdTokenCookie(googleUser) {
   var authResp = googleUser.getAuthResponse();
   var idToken = authResp.id_token;
   var expiresAt = authResp.expires_at;
   if (getCookie('id_token') != idToken) {
       setCookie('id_token', idToken, expiresAt);
-      location.reload();
+      return true;
   }
+  return false;
 }
 
 function onLoad() {

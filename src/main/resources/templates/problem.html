@@ -9,13 +9,21 @@ $(document).ready(function() {
 });
 
 function submitSolution() {
-    var solution = editor.doc.getValue();
-    $.post('/submit/{{problem.id}}', {
-        solution: solution
-    },
-    function(id) {
-        location.href = "/submit/" + id;
-    });
+    if (!getCookie('id_token')) {
+        var auth2 = gapi.auth2.init();
+        auth2.signIn().then(function(googleUser) {
+            setIdTokenCookie(googleUser);
+            submitSolution();
+        });
+    } else {
+        var solution = editor.doc.getValue();
+        $.post('/submit/{{problem.id}}', {
+            solution: solution
+        },
+        function(id) {
+            location.href = "/submit/" + id;
+        });
+    }
 }
 
 </script>
