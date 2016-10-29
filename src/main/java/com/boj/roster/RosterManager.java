@@ -4,13 +4,18 @@
 package com.boj.roster;
 
 import com.boj.jooq.tables.records.RosterRecord;
-import com.boj.jooq.tables.records.UserRecord;
+import com.google.common.base.Throwables;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import com.google.inject.Singleton;
 import org.jooq.DSLContext;
 import org.jooq.Record1;
 
 import javax.inject.Inject;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 
 import static com.boj.jooq.tables.Roster.ROSTER;
 
@@ -22,15 +27,32 @@ public class RosterManager {
 
   private final DSLContext db;
 
+  private final LoadingCache<String, Role> emailToRoleCache = CacheBuilder.newBuilder()
+      .expireAfterWrite(10, TimeUnit.MINUTES)
+      .build(new CacheLoader<String, Role>() {
+        @Override
+        public Role load(String email) throws Exception {
+          return getRoleFromDb(email);
+        }
+      });
+
   @Inject
   public RosterManager(DSLContext db) {
     this.db = db;
   }
 
-  public Role getRole(UserRecord userRecord) {
+  public Role getRole(String email) {
+    try {
+      return emailToRoleCache.get(email);
+    } catch (ExecutionException e) {
+      throw Throwables.propagate(e.getCause());
+    }
+  }
+
+  private Role getRoleFromDb(String email) {
     Record1<String> record = db.select(ROSTER.ROLE)
         .from(ROSTER)
-        .where(ROSTER.EMAIL.eq(userRecord.getEmail()))
+        .where(ROSTER.EMAIL.eq(email))
         .fetchOne();
     if (record == null) {
       return Role.ALIEN;
@@ -53,12 +75,17 @@ public class RosterManager {
     rosterRecord.setEmail(email);
     rosterRecord.setRole(role.toString());
     rosterRecord.store();
+    emailToRoleCache.refresh(email);
     return rosterRecord;
   }
 
   public void deleteById(int rosterId) {
-    db.deleteFrom(ROSTER)
-        .where(ROSTER.ID.eq(rosterId))
-        .execute();
+    RosterRecord roster = db.selectFrom(ROSTER).
+        where(ROSTER.ID.eq(rosterId))
+        .fetchAny();
+    if (roster != null) {
+      roster.delete();
+      emailToRoleCache.refresh(roster.getEmail());
+    }
   }
 }

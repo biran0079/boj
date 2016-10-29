@@ -33,8 +33,10 @@ public class ModelAndViewFactory {
   }
 
   public ModelAndView create(Map<String, Object> model, String templatePath) {
-    model.put("me", userProvider.get());
-    model.put("admin", isAdmin.get());
+    if (loginState.get() == LoginState.OK) {
+      model.put("me", userProvider.get());
+      model.put("admin", isAdmin.get());
+    }
     model.put("state", loginState.get().toString());
     return new ModelAndView(model, templatePath);
   }

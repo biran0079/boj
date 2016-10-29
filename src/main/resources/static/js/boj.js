@@ -23,6 +23,18 @@ function getCookie(name) {
   }
 }
 
+function queryParam(name, url) {
+    if (!url) {
+      url = window.location.href;
+    }
+    name = name.replace(/[\[\]]/g, "\\$&");
+    var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+        results = regex.exec(url);
+    if (!results) return null;
+    if (!results[2]) return '';
+    return decodeURIComponent(results[2].replace(/\+/g, " "));
+}
+
 var onSignIn = function (googleUser) {
   console.log("signed in");
   if (setIdTokenCookie(googleUser)) {
@@ -57,6 +69,7 @@ function onLoad() {
 
 function signOut() {
     deleteCookie('id_token');
+    deleteCookie('JSESSIONID');
     gapi.load('auth2', function() {
         var auth2 = gapi.auth2.init();
         auth2.then(function () {
@@ -106,4 +119,8 @@ function initEditor(elem) {
 
 $(document).ready(function() {
     $('select').material_select();
+    var error = queryParam('error');
+    if (error) {
+        Materialize.toast(error, 10000);
+    }
 });

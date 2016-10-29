@@ -41,6 +41,7 @@ public class SubmitRoute implements Route {
 
   @Override
   public Object handle(Request req, Response resp) throws Exception {
+    req.session().maxInactiveInterval();
     if (loginStateProvider.get() != LoginState.OK) {
       throw new PermissionDeniedException();
     }

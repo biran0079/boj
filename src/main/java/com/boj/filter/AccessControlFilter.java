@@ -7,9 +7,8 @@ import com.boj.base.ErrorPage;
 import com.boj.jooq.tables.records.UserRecord;
 import com.boj.roster.Role;
 import com.boj.roster.RosterManager;
+import com.boj.user.LoginState;
 import com.boj.user.UserAuthenticator;
-import com.boj.user.UserManager;
-import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
@@ -31,26 +30,20 @@ import java.util.concurrent.TimeUnit;
 @Singleton
 public class AccessControlFilter implements Filter {
 
-  private static final Logger log = LoggerFactory.getLogger(UserAuthenticator.class);
-
   private static final ImmutableSet<String> PATH_WHITE_LIST = ImmutableSet.of(
       "/",
       "/error");
 
   private final Provider<UserRecord> userRecordProvider;
-  private final UserManager userManager;
+  private final Provider<LoginState> loginStateProvider;
   private final RosterManager rosterManager;
-
-  private final Cache<String, Boolean> userIdToRolwCache = CacheBuilder.newBuilder()
-      .expireAfterWrite(10, TimeUnit.MINUTES)
-      .build();
 
   @Inject
   AccessControlFilter(Provider<UserRecord> userRecordProvider,
-                      UserManager userManager,
+                      Provider<LoginState> loginStateProvider,
                       RosterManager rosterManager) {
     this.userRecordProvider = userRecordProvider;
-    this.userManager = userManager;
+    this.loginStateProvider = loginStateProvider;
     this.rosterManager = rosterManager;
   }
 
@@ -65,18 +58,10 @@ public class AccessControlFilter implements Filter {
     if (PATH_WHITE_LIST.contains(pathInfo)) {
       return true;
     }
-    UserRecord userRecord;
-    try {
-      userRecord = userRecordProvider.get();
-      Boolean hasAccess = userIdToRolwCache.getIfPresent(userRecord.getId());
-      if (hasAccess == null || hasAccess == false) {
-        hasAccess = rosterManager.getRole(userRecord) != Role.ALIEN;
-        userIdToRolwCache.put(userRecord.getId(), hasAccess);
-      }
-      return hasAccess;
-    } catch (Exception e) {
-      log.error("Failed to get used record.", e);
+    if (loginStateProvider.get() != LoginState.OK) {
+      return false;
     }
-    return false;
+    UserRecord userRecord = userRecordProvider.get();
+    return rosterManager.getRole(userRecord.getEmail()) != Role.ALIEN;
   }
 }

@@ -23,6 +23,7 @@ import org.apache.commons.io.IOUtils;
 import org.flywaydb.core.Flyway;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import spark.Request;
 import spark.template.pebble.PebbleTemplateEngine;
 
 import javax.inject.Provider;
@@ -112,7 +113,11 @@ public class BojServer {
     ClasspathLoader loader = new ClasspathLoader();
     loader.setPrefix("templates/");
 
-    before("/*", (request, response) -> requestScope.enter());
+    before("/*", (request, response) -> {
+      requestScope.enter();
+      request.session().maxInactiveInterval(3600 * 24);
+      requestScope.seed(Request.class, request);
+    });
     before("/*", authFilter);
     before("/*", accessControlFilter);
 
@@ -123,9 +128,6 @@ public class BojServer {
     get("/", (req, resp) -> modelAndViewFactory.create(new HashMap<>(), "index.html"), engine);
 
     get("/leader_board", leaderBoardRoute, engine);
-    get("/error", (req, resp) -> modelAndViewFactory.create(MapBuilder.create()
-        .put("message", ErrorPage.fromString(req.queryParams("reason")).getMessage())
-        .build(), "error.html"), engine);
 
     get("/roster", (request, response) ->{
         if (!isAdmin.get()) {
@@ -181,11 +183,8 @@ public class BojServer {
       int id = Integer.parseInt(request.params(":id"));
       ProblemRecord problemRecord = problemManager.getProblemById(id);
       if (problemRecord == null) {
-        return modelAndViewFactory.create(
-            MapBuilder.create()
-                .put("message", "problem does not exist")
-                .build(),
-            "error.html");
+        response.redirect(ErrorPage.PROBLEM_NOT_EXIST.getPath());
+        return null;
       }
       return modelAndViewFactory.create(
           MapBuilder.create()

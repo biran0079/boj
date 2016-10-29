@@ -4,6 +4,8 @@ import com.boj.annotation.CheckstyleConfigPath;
 import com.boj.annotation.CheckstyleJarPath;
 import com.boj.annotation.IsAdmin;
 import com.boj.annotation.JunitClassPath;
+import com.boj.base.SessionKey;
+import com.boj.base.SessionKeys;
 import com.boj.guice.RequestScope;
 import com.boj.guice.RequestScopeModule;
 import com.boj.jooq.tables.records.UserRecord;
@@ -17,6 +19,8 @@ import org.flywaydb.core.Flyway;
 import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
+import spark.Request;
+import spark.Session;
 
 import javax.inject.Singleton;
 import java.io.File;
@@ -53,21 +57,27 @@ public class BojServerModule extends AbstractModule {
 
   @Provides
   @RequestScoped
-  UserRecord providesUserRecord(RequestScope requestScope) {
-    return requestScope.get(UserRecord.class);
+  Request providesRequest(RequestScope requestScope) {
+    return requestScope.get(Request.class);
   }
 
   @Provides
   @RequestScoped
-  LoginState providesLoginState(RequestScope requestScope) {
-    return requestScope.get(LoginState.class);
+  UserRecord providesUserRecord(Request request) {
+    return SessionKeys.USER_RECORD.get(request);
+  }
+
+  @Provides
+  @RequestScoped
+  LoginState providesLoginState(Request request) {
+    return SessionKeys.LOGIN_STATE.get(request);
   }
 
   @Provides
   @RequestScoped
   @IsAdmin
   boolean providesIsAdmin(RosterManager rosterManager, UserRecord userRecord) {
-    return rosterManager.getRole(userRecord) == Role.ADMIN;
+    return rosterManager.getRole(userRecord.getEmail()) == Role.ADMIN;
   }
 
   @Provides
