@@ -3,26 +3,19 @@
  */
 package com.boj.filter;
 
-import com.boj.base.ErrorPage;
+import com.boj.base.BojErrorType;
 import com.boj.jooq.tables.records.UserRecord;
 import com.boj.roster.Role;
 import com.boj.roster.RosterManager;
 import com.boj.user.LoginState;
-import com.boj.user.UserAuthenticator;
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
 import com.google.common.collect.ImmutableSet;
 import com.google.inject.Singleton;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import spark.Filter;
 import spark.Request;
 import spark.Response;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author Ran Bi (ran.bi@addepar.com)
@@ -50,7 +43,7 @@ public class AccessControlFilter implements Filter {
   @Override
   public void handle(Request request, Response response) throws Exception {
     if (!canAccessSite(request.pathInfo())) {
-      response.redirect(ErrorPage.ACCESS_DENIED.getPath());
+      throw BojErrorType.ACCESS_DENIED.exception();
     }
   }
 

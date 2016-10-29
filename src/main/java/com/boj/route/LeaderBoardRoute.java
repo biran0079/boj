@@ -27,17 +27,14 @@ public class LeaderBoardRoute implements TemplateViewRoute {
 
   private final RosterManager rosterManager;
   private final UserManager userManager;
-  private final SubmissionManager submissionManager;
   private final ModelAndViewFactory factory;
 
   @Inject
   public LeaderBoardRoute(RosterManager rosterManager,
                           UserManager userManager,
-                          SubmissionManager submissionManager,
                           ModelAndViewFactory factory) {
     this.rosterManager = rosterManager;
     this.userManager = userManager;
-    this.submissionManager = submissionManager;
     this.factory = factory;
   }
 

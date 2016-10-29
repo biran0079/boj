@@ -1,15 +1,13 @@
 package com.boj.route;
 
-import com.boj.base.PermissionDeniedException;
+import com.boj.base.BojErrorType;
 import com.boj.jooq.tables.records.SubmissionRecord;
 import com.boj.jooq.tables.records.UserRecord;
 import com.boj.judge.Judge;
 import com.boj.judge.Verdict;
-import com.boj.problem.ProblemManager;
 import com.boj.submission.SubmissionManager;
 import com.boj.user.LoginState;
 import com.google.inject.Inject;
-import spark.ModelAndView;
 import spark.Request;
 import spark.Response;
 import spark.Route;
@@ -43,7 +41,7 @@ public class SubmitRoute implements Route {
   public Object handle(Request req, Response resp) throws Exception {
     req.session().maxInactiveInterval();
     if (loginStateProvider.get() != LoginState.OK) {
-      throw new PermissionDeniedException();
+      throw BojErrorType.NO_PERMISSION.exception();
     }
     int problemId = Integer.parseInt(req.params(":id"));
     String solution = req.queryParams("solution");

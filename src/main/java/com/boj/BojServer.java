@@ -57,7 +57,7 @@ public class BojServer {
   private final UserManager userManager;
   private final SubmissionManager submissionManager;
   private final ModelAndViewFactory modelAndViewFactory;
-  private final PermissionDeniedExceptionHandler permissionDeniedExceptionHandler;
+  private final BojExceptionHandler bojExceptionHandler;
   private final AuthenticationFilter authFilter;
   private final AccessControlFilter accessControlFilter;
   private final RosterManager rosterManager;
@@ -75,7 +75,7 @@ public class BojServer {
                    UserManager userManager,
                    SubmissionManager submissionManager,
                    ModelAndViewFactory modelAndViewFactory,
-                   PermissionDeniedExceptionHandler permissionDeniedExceptionHandler,
+                   BojExceptionHandler bojExceptionHandler,
                    AuthenticationFilter authFilter,
                    AccessControlFilter accessControlFilter,
                    RosterManager rosterManager,
@@ -91,7 +91,7 @@ public class BojServer {
     this.userManager = userManager;
     this.submissionManager = submissionManager;
     this.modelAndViewFactory = modelAndViewFactory;
-    this.permissionDeniedExceptionHandler = permissionDeniedExceptionHandler;
+    this.bojExceptionHandler = bojExceptionHandler;
     this.authFilter = authFilter;
     this.accessControlFilter = accessControlFilter;
     this.rosterManager = rosterManager;
@@ -102,9 +102,10 @@ public class BojServer {
   void start() {
     flyway.migrate();
     staticFiles.location("/static");
-    exception(PermissionDeniedException.class, permissionDeniedExceptionHandler);
+    exception(BojException.class, bojExceptionHandler);
     exception(Exception.class, (exception, request, response) -> {
-      logger.error("Error when handling {}", request.pathInfo(), exception);
+      logger.error("Unknown error when handling {}", request.pathInfo(), exception);
+      BojErrorType.UNKNOWN.handle(response);
     });
 
     port(8080);
@@ -131,7 +132,7 @@ public class BojServer {
 
     get("/roster", (request, response) ->{
         if (!isAdmin.get()) {
-          throw new PermissionDeniedException();
+          throw BojErrorType.NO_PERMISSION.exception();
         }
         return modelAndViewFactory.create(
             MapBuilder.create()
@@ -142,7 +143,7 @@ public class BojServer {
         engine);
     post("/roster", (request, response) -> {
       if (!isAdmin.get()) {
-        throw new PermissionDeniedException();
+        throw BojErrorType.NO_PERMISSION.exception();
       }
       String email = request.queryParams("email");
       Role role = Role.valueOf(request.queryParams("role"));
@@ -152,7 +153,7 @@ public class BojServer {
     });
     delete("/roster/:id", (request, response) -> {
       if (!isAdmin.get()) {
-        throw new PermissionDeniedException();
+        throw BojErrorType.NO_PERMISSION.exception();
       }
       int rosterId = Integer.valueOf(request.params(":id"));
       rosterManager.deleteById(rosterId);
@@ -183,8 +184,7 @@ public class BojServer {
       int id = Integer.parseInt(request.params(":id"));
       ProblemRecord problemRecord = problemManager.getProblemById(id);
       if (problemRecord == null) {
-        response.redirect(ErrorPage.PROBLEM_NOT_EXIST.getPath());
-        return null;
+        throw BojErrorType.PROBLEM_NOT_EXIST.exception();
       }
       return modelAndViewFactory.create(
           MapBuilder.create()
@@ -195,7 +195,7 @@ public class BojServer {
     }, engine);
     delete("/problem/:id", (request, response) -> {
       if (!isAdmin.get()) {
-        throw new PermissionDeniedException();
+        throw BojErrorType.NO_PERMISSION.exception();
       }
       int problemId = Integer.valueOf(request.params(":id"));
       problemManager.deleteProblem(problemId);

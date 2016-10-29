@@ -17,14 +17,14 @@ import javax.inject.Provider;
 /**
  * @author Ran Bi (ran.bi@addepar.com)
  */
-public class PermissionDeniedExceptionHandler implements ExceptionHandler {
+public class BojExceptionHandler implements ExceptionHandler {
 
   private static final Logger logger = LoggerFactory.getLogger(BojServer.class);
 
   private final Provider<UserRecord> userRecordProvider;
 
   @Inject
-  PermissionDeniedExceptionHandler(Provider<UserRecord> userRecordProvider) {
+  BojExceptionHandler(Provider<UserRecord> userRecordProvider) {
     this.userRecordProvider = userRecordProvider;
   }
 
@@ -33,6 +33,7 @@ public class PermissionDeniedExceptionHandler implements ExceptionHandler {
     logger.info("User {} does not have permission for request {}.",
         userRecordProvider.get().getEmail(),
         request.pathInfo());
-    response.redirect(ErrorPage.NO_PERMISSION.getPath());
+    BojException bojException = (BojException) e;
+    bojException.getBojErrorType().handle(response);
   }
 }
