@@ -36,6 +36,9 @@ function submitSolution() {
         <div class="card-content">
             {{ problem.description | raw }}
         </div>
+        <div class="card-action">
+            <a href="/submits?problem_id={{ problem.id }}">View Submissions</a>
+        </div>
     </div>
     <div class="editor">
         <textarea id="solution-editor">{{problem.templateSrc}}</textarea>

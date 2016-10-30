@@ -12,6 +12,7 @@ import com.boj.problem.ProblemManager;
 import com.boj.roster.Role;
 import com.boj.roster.RosterManager;
 import com.boj.route.*;
+import com.boj.submission.SubmissionFilter;
 import com.boj.submission.SubmissionManager;
 import com.boj.user.UserManager;
 import com.google.api.client.repackaged.com.google.common.base.Strings;
@@ -227,10 +228,17 @@ public class BojServer {
 
     get("/submits", (request, response) -> {
       String userId = request.queryParams("user_id");
-      List<SubmissionRecord> submissionRecordList =
-          Strings.isNullOrEmpty(userId)
-              ? submissionManager.getSubmissions()
-              : submissionManager.getSubmissionsForUser(userId);
+      String problemId = request.queryParams("problem_id");
+      String limit = request.queryParams("limit");
+      SubmissionFilter.Builder filter = SubmissionFilter.newBuilder();
+      if (!Strings.isNullOrEmpty(userId)) {
+        filter.setuserId(userId);
+      }
+      if (!Strings.isNullOrEmpty(problemId)) {
+        filter.setProblemId(Integer.valueOf(problemId));
+      }
+      int limitValue = Strings.isNullOrEmpty(limit) ? 60 : Integer.valueOf(limit);
+      List<SubmissionRecord> submissionRecordList = submissionManager.getSubmissions(filter.build(), limitValue);
       Map<Integer, ProblemRecord> problemRecordMap = problemManager.getProblemsByIds(
           submissionRecordList.stream()
               .map(SubmissionRecord::getProblemId)

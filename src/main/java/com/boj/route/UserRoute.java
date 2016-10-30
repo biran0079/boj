@@ -9,6 +9,7 @@ import com.boj.jooq.tables.records.SubmissionRecord;
 import com.boj.jooq.tables.records.SubmissionViewRecord;
 import com.boj.jooq.tables.records.UserRecord;
 import com.boj.problem.ProblemManager;
+import com.boj.submission.SubmissionFilter;
 import com.boj.submission.SubmissionManager;
 import com.boj.user.UserManager;
 import com.boj.base.DateUtil;
@@ -49,7 +50,11 @@ public class UserRoute implements TemplateViewRoute {
   @Override
   public ModelAndView handle(Request request, Response response) throws Exception {
     UserRecord user = userManager.getUser(request.params(":id"));
-    List<SubmissionRecord> submissionRecordList = submissionManager.getSubmissionsForUser(user.getId(), 5);
+    List<SubmissionRecord> submissionRecordList = submissionManager.getSubmissions(
+        SubmissionFilter.newBuilder()
+            .setuserId(user.getId())
+            .build(),
+        5);
     Map<Integer, ProblemRecord> problems = problemManager.getProblemsByIds(
         submissionRecordList.stream()
             .map(SubmissionRecord::getProblemId)

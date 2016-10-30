@@ -80,21 +80,11 @@ public class SubmissionManager {
         .fetchOne();
   }
 
-  public List<SubmissionRecord> getSubmissionsForUser(String userId) {
-    return getSubmissionsForUser(userId, Integer.MAX_VALUE);
-  }
-
-  public List<SubmissionRecord> getSubmissionsForUser(String userId, int limit) {
+  public List<SubmissionRecord> getSubmissions(SubmissionFilter filter, int limit) {
     return db.selectFrom(SUBMISSION)
-        .where(SUBMISSION.USER_ID.eq(userId))
+        .where(filter.toJooqCondition())
         .orderBy(SUBMISSION.DATETIME.desc())
         .limit(limit)
-        .fetch();
-  }
-
-  public List<SubmissionRecord> getSubmissions() {
-    return db.selectFrom(SUBMISSION)
-        .orderBy(SUBMISSION.DATETIME.desc())
         .fetch();
   }
 
