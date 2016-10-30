@@ -1,6 +1,7 @@
 package com.boj.submission;
 
 import com.boj.jooq.tables.Submission;
+import com.boj.judge.Verdict;
 import org.jooq.Condition;
 import org.jooq.impl.DSL;
 
@@ -13,10 +14,12 @@ public class SubmissionFilter {
 
   private final String userId;
   private final Integer problemId;
+  private final String verdict;
 
   private SubmissionFilter(Builder builder) {
     this.userId = builder.userId;
     this.problemId = builder.problemId;
+    this.verdict = builder.verdict;
   }
 
   public Condition toJooqCondition() {
@@ -26,6 +29,9 @@ public class SubmissionFilter {
     }
     if (problemId != null) {
       result = result.and(SUBMISSION.PROBLEM_ID.eq(problemId));
+    }
+    if (verdict != null) {
+      result = result.and(SUBMISSION.VERDICT.eq(verdict));
     }
     return result;
   }
@@ -38,6 +44,7 @@ public class SubmissionFilter {
 
     private String userId;
     private Integer problemId;
+    private String verdict;
 
     private Builder() {
 
@@ -50,6 +57,11 @@ public class SubmissionFilter {
 
     public Builder setProblemId(int problemId) {
       this.problemId = problemId;
+      return this;
+    }
+
+    public Builder setVerdict(String verdict) {
+      this.verdict = verdict;
       return this;
     }
 

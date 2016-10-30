@@ -229,11 +229,11 @@ public class BojServer {
     get("/submits", (request, response) -> {
       String userId = request.queryParams("user_id");
       String problemId = request.queryParams("problem_id");
+      String verdict = request.queryParams("verdict");
       String limit = request.queryParams("limit");
       SubmissionFilter.Builder filter = SubmissionFilter.newBuilder();
-      if (!Strings.isNullOrEmpty(userId)) {
-        filter.setuserId(userId);
-      }
+      filter.setuserId(userId);
+      filter.setVerdict(verdict);
       if (!Strings.isNullOrEmpty(problemId)) {
         filter.setProblemId(Integer.valueOf(problemId));
       }
