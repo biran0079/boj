@@ -15,6 +15,7 @@ import org.jooq.Record1;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.boj.jooq.Tables.SUBMISSION;
 import static com.boj.jooq.Tables.SUBMISSION_VIEW;
@@ -107,18 +108,20 @@ public class SubmissionManager {
   }
 
   public List<SubmissionViewRecord> getSubmissionViewRecords(String userId, int limit) {
-    List<Integer> submissionViewIds = new ArrayList<>();
-    for (Record1<Integer> record : db.select(SUBMISSION_VIEW.ID)
+    List<Integer> submissionViewIds = db.select(SUBMISSION_VIEW.ID)
         .from(SUBMISSION_VIEW
             .join(SUBMISSION)
             .on(SUBMISSION_VIEW.SUBMISSION_ID.eq(SUBMISSION.ID)))
         .where(SUBMISSION.USER_ID.eq(userId))
+        .orderBy(SUBMISSION_VIEW.DATETIME.desc())
         .limit(limit)
-        .fetch()) {
-      submissionViewIds.add(record.value1());
-    }
+        .fetch()
+        .stream()
+        .map(Record1::value1)
+        .collect(Collectors.toList());
     return db.selectFrom(SUBMISSION_VIEW)
         .where(SUBMISSION_VIEW.ID.in(submissionViewIds))
+        .orderBy(SUBMISSION_VIEW.DATETIME.desc())
         .fetch();
   }
 }
