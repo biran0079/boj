@@ -205,7 +205,9 @@ public class BojServer {
     get("/problem/export/:id", ((req, res) -> {
       int id = Integer.valueOf(req.params(":id"));
       res.type("Application/octetstream");
-      res.header("Content-Disposition", String.format("attachment; filename=\"%s\"", "problem_" + id + ".json"));
+      ProblemRecord problemRecord = problemManager.getProblemById(id);
+      String fileName = problemRecord.getTitle().replace(" ", "_") + ".json";
+      res.header("Content-Disposition", String.format("attachment; filename=\"%s\"", fileName));
       HttpServletResponse raw = res.raw();
       raw.getOutputStream().write(problemManager.exportProblemByIdAsJson(id).getBytes());
       raw.getOutputStream().flush();
