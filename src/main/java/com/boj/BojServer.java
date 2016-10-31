@@ -162,7 +162,7 @@ public class BojServer {
     });
 
     get("/problems", (request, response) -> modelAndViewFactory.create(
-        MapBuilder.create().put("problems", problemManager.getProblems()).build(),
+        MapBuilder.create().put("problems", problemManager.getProblemsData()).build(),
         "problems.html"), engine);
 
     get("/problem/create", (req, resp) -> modelAndViewFactory.create(

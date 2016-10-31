@@ -7,6 +7,7 @@ import com.boj.jooq.tables.records.ProblemRecord;
 import com.boj.jooq.tables.records.SubmissionRecord;
 import com.boj.judge.error.*;
 import com.boj.problem.ProblemManager;
+import com.boj.problem.ProblemSolvedListener;
 import com.boj.submission.SubmissionManager;
 import com.google.inject.Inject;
 import org.apache.commons.io.FileUtils;
@@ -15,6 +16,7 @@ import javax.inject.Singleton;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.regex.Matcher;
@@ -35,18 +37,21 @@ public class Judge {
   private final String junitClassPath;
   private final String checkStyleJar;
   private final String checkStyleConfig;
+  private final Set<ProblemSolvedListener> problemSolvedListeners;
 
   @Inject
   Judge(ProblemManager problemManager,
         SubmissionManager submissionManager,
         @JunitClassPath String junitClassPath,
         @CheckstyleJarPath String checkStyleJar,
-        @CheckstyleConfigPath String checkStyleConfig) {
+        @CheckstyleConfigPath String checkStyleConfig,
+        Set<ProblemSolvedListener> problemSolvedListeners) {
     this.problemManager = problemManager;
     this.submissionManager = submissionManager;
     this.junitClassPath = junitClassPath;
     this.checkStyleJar = checkStyleJar;
     this.checkStyleConfig = checkStyleConfig;
+    this.problemSolvedListeners = problemSolvedListeners;
   }
 
   public void submit(SubmissionRecord submission) {
@@ -78,6 +83,8 @@ public class Judge {
       compile(dir.getAbsolutePath(), unitTestClass);
       run(dir.getAbsolutePath(), unitTestClass);
       submissionManager.updateVerdictAndMessage(submission.getId(), Verdict.ACCEPTED, "");
+      problemSolvedListeners.forEach(
+          listener -> listener.onProblemSolved(problem.getId(), submission.getUserId()));
     } catch (ErrorWithVerdict e) {
       submissionManager.updateVerdictAndMessage(submission.getId(), e.getVerdict(), e.getMessage());
     } catch (Throwable e) {

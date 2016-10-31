@@ -8,6 +8,7 @@ import com.boj.jooq.tables.records.SubmissionRecord;
 import com.boj.jooq.tables.records.SubmissionViewRecord;
 import com.boj.judge.Verdict;
 import com.boj.user.UserManager;
+import com.google.common.collect.ImmutableSet;
 import com.google.inject.Singleton;
 import org.jooq.DSLContext;
 import org.jooq.Record1;
@@ -113,5 +114,18 @@ public class SubmissionManager {
         .where(SUBMISSION_VIEW.ID.in(submissionViewIds))
         .orderBy(SUBMISSION_VIEW.DATETIME.desc())
         .fetch();
+  }
+
+  public ImmutableSet<String> getUserIdsWhoSolved(int problemId) {
+    ImmutableSet.Builder<String> builder = ImmutableSet.builder();
+    db.selectDistinct(SUBMISSION.USER_ID)
+        .from(SUBMISSION)
+        .where(SUBMISSION.VERDICT.eq(Verdict.ACCEPTED.toString()),
+            SUBMISSION.PROBLEM_ID.eq(problemId))
+        .fetch()
+        .stream()
+        .map(Record1::value1)
+        .forEach(builder::add);
+    return builder.build();
   }
 }

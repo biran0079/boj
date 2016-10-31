@@ -37,7 +37,8 @@ function submitSolution() {
             {{ problem.description | raw }}
         </div>
         <div class="card-action">
-            <a href="/submits?problem_id={{ problem.id }}">View Submissions</a>
+            <a href="/submits?problem_id={{ problem.id }}">All Submissions</a>
+            <a href="/submits?problem_id={{ problem.id }}&user_id={{ me.id }}">My Submissions</a>
         </div>
     </div>
     <div class="editor">

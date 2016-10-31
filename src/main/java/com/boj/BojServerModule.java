@@ -9,11 +9,14 @@ import com.boj.base.SessionKeys;
 import com.boj.guice.RequestScope;
 import com.boj.guice.RequestScopeModule;
 import com.boj.jooq.tables.records.UserRecord;
+import com.boj.problem.ProblemSolvedListener;
+import com.boj.problem.ProblemStatsManager;
 import com.boj.roster.Role;
 import com.boj.roster.RosterManager;
 import com.boj.user.LoginState;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
+import com.google.inject.multibindings.Multibinder;
 import com.google.inject.servlet.RequestScoped;
 import org.flywaydb.core.Flyway;
 import org.jooq.DSLContext;
@@ -45,6 +48,9 @@ public class BojServerModule extends AbstractModule {
         .to(getPath("./checkstyle-7.1.2-all.jar"));
     bindConstant().annotatedWith(CheckstyleConfigPath.class)
         .to(getPath("./boj_check.xml"));
+
+    Multibinder problemSolvedListenerBinder = Multibinder.newSetBinder(binder(), ProblemSolvedListener.class);
+    problemSolvedListenerBinder.addBinding().to(ProblemStatsManager.class);
   }
 
   private static final String getPath(String relativePath) {

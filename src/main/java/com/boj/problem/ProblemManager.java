@@ -1,18 +1,20 @@
 package com.boj.problem;
 
 import com.boj.jooq.tables.records.ProblemRecord;
-import com.boj.submission.SubmissionManager;
+import com.boj.jooq.tables.records.UserRecord;
 import com.google.common.collect.ImmutableList;
 import com.google.inject.Inject;
 import org.jooq.DSLContext;
 import org.jooq.Field;
 
+import javax.inject.Provider;
 import javax.inject.Singleton;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static com.boj.jooq.tables.Problem.PROBLEM;
 
@@ -23,14 +25,28 @@ import static com.boj.jooq.tables.Problem.PROBLEM;
 public class ProblemManager {
 
   private final DSLContext db;
+  private final Provider<UserRecord> currentUser;
+  private final ProblemStatsManager problemStatsManager;
 
   @Inject
-  public ProblemManager(DSLContext db) {
+  public ProblemManager(DSLContext db,
+                        Provider<UserRecord> currentUser,
+                        ProblemStatsManager problemStatsManager) {
     this.db = db;
+    this.currentUser = currentUser;
+    this.problemStatsManager = problemStatsManager;
   }
 
-  public List<ProblemRecord> getProblems() {
+  private List<ProblemRecord> getProblems() {
     return ImmutableList.copyOf(db.selectFrom(PROBLEM).fetch());
+  }
+
+  public List<ProblemData> getProblemsData() {
+    return getProblems().stream()
+        .map(record -> new ProblemData(record,
+            problemStatsManager.getProblemStat(record.getId()),
+            currentUser.get()))
+        .collect(Collectors.toList());
   }
 
   public ProblemRecord getProblemById(int id) {

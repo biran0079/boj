@@ -3,22 +3,38 @@
 <script>
     $(document).ready(function() {
         $('#problem_file').change(function() {
-            console.log('submitting');
             $('#problem_import_form').submit();
         });
     });
 </script>
 <div class="content z-depth-2">
     <table class="highlight">
+        <tr>
+            <th></th>
+            <th>Solved</th>
+            <th>Title</th>
+        </tr>
         {% for problem in problems  %}
         <tr>
+            <td>
+                {% if problem.solvedByMe %}
+                <a href="/submits?problem_id={{problem.id}}&user_id={{me.id}}&verdict=ACCEPTED">
+                    <i class="material-icons done-icon">done</i>
+                </a>
+                {% endif %}
+            </td>
+            <td>
+                <a href="/submits?problem_id={{problem.id}}&verdict=ACCEPTED">
+                    {{ problem.solvedUserCount }}
+                </a>
+            </td>
             <td>
                 <a href="/problem/{{problem.id}}">
                     {{ problem.title }}
                 </a>
             </td>
-            <td>
-                {% if admin == true %}
+            {% if admin == true %}
+                <td>
                     <a href="#" onclick="deleteProblem({{problem.id}})">
                         <i class="material-icons right">delete</i>
                     </a>
@@ -28,8 +44,8 @@
                     <a href="/problem/export/{{problem.id}}">
                         <i class="material-icons right">file_download</i>
                     </a>
-                {% endif %}
-            </td>
+                </td>
+            {% endif %}
         </tr>
         {% endfor %}
     </table>
