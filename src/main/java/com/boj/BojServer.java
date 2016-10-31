@@ -237,7 +237,7 @@ public class BojServer {
       if (!Strings.isNullOrEmpty(problemId)) {
         filter.setProblemId(Integer.valueOf(problemId));
       }
-      int limitValue = Strings.isNullOrEmpty(limit) ? 60 : Integer.valueOf(limit);
+      int limitValue = Strings.isNullOrEmpty(limit) ? 30 : Integer.valueOf(limit);
       List<SubmissionRecord> submissionRecordList = submissionManager.getSubmissions(filter.build(), limitValue);
       Map<Integer, ProblemRecord> problemRecordMap = problemManager.getProblemsByIds(
           submissionRecordList.stream()

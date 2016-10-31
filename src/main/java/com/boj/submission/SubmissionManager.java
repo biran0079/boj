@@ -64,7 +64,7 @@ public class SubmissionManager {
     record.store();
   }
 
-  public boolean hasSubmission(Integer problemId, String userId, Verdict verdict) {
+  private boolean hasSubmission(Integer problemId, String userId, Verdict verdict) {
     SubmissionRecord record = db.selectFrom(SUBMISSION)
         .where(
             SUBMISSION.USER_ID.eq(userId),
