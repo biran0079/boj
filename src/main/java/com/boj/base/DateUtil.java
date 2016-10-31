@@ -25,13 +25,25 @@ public class DateUtil {
       return "just now";
     }
     if (now - then < ONE_HOUR_MS) {
-      return "a few minutes ago";
+      long minuteCount = (now - then) / ONE_MINUTE_MS;
+      if (minuteCount == 1) {
+        return "1 minute ago";
+      }
+      return String.format("%d minutes ago", minuteCount);
     }
     if (now - then < ONE_DAY_MS) {
-      return "a few hours ago";
+      long hourCount = (now - then) / ONE_HOUR_MS;
+      if (hourCount == 1) {
+        return "1 hour ago";
+      }
+      return String.format("%d hours ago", hourCount);
     }
     if (now - then < ONE_WEEK_MS) {
-      return "a few days ago";
+      long dayCount = (now - then) / ONE_DAY_MS;
+      if (dayCount == 1) {
+        return "1 day ago";
+      }
+      return String.format("%d days ago", dayCount);
     }
     return FORMAT.format(then);
   }
