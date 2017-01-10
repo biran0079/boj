@@ -112,9 +112,9 @@ public class Judge {
 
     if (returnValue != 0) {
       String message = FileUtils.readFileToString(new File(dir + "/run-out.log"), Charset.defaultCharset());
-      if (message.contains("java.lang.AssertionError")) {
+      if (message.contains("java.lang.AssertionError") || message.contains("org.junit.ComparisonFailure")) {
         throw new WrongAnswer(message);
-      } else if (message.contains("org.junit.runners.model.TestTimedOutException:")) {
+      } else if (message.contains("org.junit.runners.model.TestTimedOutException")) {
         throw new TimeLimitExceededError(message);
       } else if (message.contains("java.lang.OutOfMemoryError")) {
         throw new MemoryLimitExceededError(message);

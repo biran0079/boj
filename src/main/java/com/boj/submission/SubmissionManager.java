@@ -56,7 +56,14 @@ public class SubmissionManager {
         userManager.updateScore(record.getUserId(), 10);
       }
     } else {
-      userManager.updateScore(record.getUserId(), -2);
+      switch (verdict) {
+        case WRONG_ANSWER:
+        case TIME_LIMIT_EXCEEDED:
+        case MEMORY_LIMIT_EXCEEDED:
+        case RUNTIME_ERROR:
+          userManager.updateScore(record.getUserId(), -2);
+          break;
+      }
     }
 
     record.setVerdict(verdict.toString());
