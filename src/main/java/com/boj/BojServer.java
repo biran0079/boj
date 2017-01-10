@@ -8,6 +8,7 @@ import com.boj.guice.RequestScope;
 import com.boj.jooq.tables.records.ProblemRecord;
 import com.boj.jooq.tables.records.SubmissionRecord;
 import com.boj.jooq.tables.records.UserRecord;
+import com.boj.prefupgrade.PrefUpgrader;
 import com.boj.problem.ProblemManager;
 import com.boj.roster.Role;
 import com.boj.roster.RosterManager;
@@ -64,6 +65,7 @@ public class BojServer {
   private final RosterManager rosterManager;
   private final LeaderBoardRoute leaderBoardRoute;
   private final Provider<Boolean> isAdmin;
+  private final PrefUpgrader prefUpgrader;
 
   @Inject
   public BojServer(Flyway flyway,
@@ -81,7 +83,8 @@ public class BojServer {
                    AccessControlFilter accessControlFilter,
                    RosterManager rosterManager,
                    LeaderBoardRoute leaderBoardRoute,
-                   @IsAdmin Provider<Boolean> isAdmin) {
+                   @IsAdmin Provider<Boolean> isAdmin,
+                   PrefUpgrader prefUpgrader) {
     this.flyway = flyway;
     this.createOrUpdateProblemRoute = createOrUpdateProblemRoute;
     this.submitRoute = submitRoute;
@@ -98,10 +101,12 @@ public class BojServer {
     this.rosterManager = rosterManager;
     this.leaderBoardRoute = leaderBoardRoute;
     this.isAdmin = isAdmin;
+    this.prefUpgrader = prefUpgrader;
   }
 
   void start() {
     flyway.migrate();
+    prefUpgrader.upgrade();
     staticFiles.location("/static");
     exception(BojException.class, bojExceptionHandler);
     exception(Exception.class, (exception, request, response) -> {

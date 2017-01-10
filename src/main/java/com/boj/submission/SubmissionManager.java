@@ -50,20 +50,19 @@ public class SubmissionManager {
 
   public void updateVerdictAndMessage(int submissionId, Verdict verdict, String message) {
     SubmissionRecord record = getSubmissionById(submissionId);
-    if (verdict == Verdict.ACCEPTED) {
-      if (!hasSubmission(record.getProblemId(), record.getUserId(), Verdict.ACCEPTED)) {
-        // first time solving the problem
-        userManager.updateScore(record.getUserId(), 10);
-      }
-    } else {
-      switch (verdict) {
-        case WRONG_ANSWER:
-        case TIME_LIMIT_EXCEEDED:
-        case MEMORY_LIMIT_EXCEEDED:
-        case RUNTIME_ERROR:
-          userManager.updateScore(record.getUserId(), -2);
-          break;
-      }
+    switch (verdict) {
+      case ACCEPTED:
+        if (!hasSubmission(record.getProblemId(), record.getUserId(), Verdict.ACCEPTED)) {
+          // first time solving the problem
+          userManager.updateScore(record.getUserId(), 10);
+        }
+        break;
+      case WRONG_ANSWER:
+      case TIME_LIMIT_EXCEEDED:
+      case MEMORY_LIMIT_EXCEEDED:
+      case RUNTIME_ERROR:
+        userManager.updateScore(record.getUserId(), -2);
+        break;
     }
 
     record.setVerdict(verdict.toString());
