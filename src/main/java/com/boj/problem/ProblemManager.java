@@ -38,7 +38,9 @@ public class ProblemManager {
   }
 
   private List<ProblemRecord> getProblems() {
-    return ImmutableList.copyOf(db.selectFrom(PROBLEM).fetch());
+    return ImmutableList.copyOf(db.selectFrom(PROBLEM)
+        .orderBy(PROBLEM.ID.desc())
+        .fetch());
   }
 
   public List<ProblemData> getProblemsData() {
