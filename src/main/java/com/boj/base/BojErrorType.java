@@ -13,6 +13,7 @@ public enum BojErrorType {
   NO_PERMISSION("You don't have permission to access this page."),
   ACCESS_DENIED("You don't have access to this site. Please reach out to biran0079@gmail.com for access."),
   PROBLEM_NOT_EXIST("/problems", "Problem does not exist."),
+  SUBMISSION_NOT_EXIST("/submits", "Submission does not exist."),
   UNKNOWN("Unknown error occurred.");
 
   private final String baseUrl;

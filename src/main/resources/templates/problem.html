@@ -26,6 +26,10 @@ function submitSolution() {
     }
 }
 
+function reset() {
+    editor.setValue($('#problem-template-src').text());
+}
+
 </script>
 <iframe id="for_download" style="display:none;"></iframe>
 <div class="content">
@@ -41,9 +45,11 @@ function submitSolution() {
             <a href="/submits?problem_id={{ problem.id }}&user_id={{ me.id }}">My Submissions</a>
         </div>
     </div>
-    <div class="editor">
-        <textarea id="solution-editor">{{problem.templateSrc}}</textarea>
+    <div class="editor" id="problem-src">
+        <textarea id="solution-editor">{{source_code}}</textarea>
     </div>
+    <a onclick="reset()" class="waves-effect waves-light btn red">reset</a>
     <a onclick="submitSolution()" class="waves-effect waves-light btn">submit</a>
 </div>
+<div id="problem-template-src" style="display:none">{{ problem.templateSrc }}</div>
 {% endblock %}

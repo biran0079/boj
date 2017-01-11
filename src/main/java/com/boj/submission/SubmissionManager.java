@@ -134,4 +134,13 @@ public class SubmissionManager {
         .forEach(builder::add);
     return builder.build();
   }
+
+  public SubmissionRecord getLastSubmission(int problemId, String userId) {
+    return db.selectFrom(SUBMISSION)
+        .where(SUBMISSION.PROBLEM_ID.eq(problemId))
+        .and(SUBMISSION.USER_ID.eq(userId))
+        .orderBy(SUBMISSION.DATETIME.desc())
+        .limit(1)
+        .fetchOne();
+  }
 }

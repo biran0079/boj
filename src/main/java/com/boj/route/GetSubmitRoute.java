@@ -3,6 +3,7 @@
  */
 package com.boj.route;
 
+import com.boj.base.BojErrorType;
 import com.boj.base.ModelAndViewFactory;
 import com.boj.jooq.tables.records.SubmissionRecord;
 import com.boj.jooq.tables.records.UserRecord;
@@ -44,11 +45,10 @@ public class GetSubmitRoute implements TemplateViewRoute {
     SubmissionRecord submission = submissionManager.getSubmissionById(submissionId);
     Map<String, Object> model = new HashMap<>();
     if (submission == null) {
-      model.put("verdict", "submission not found");
+      throw BojErrorType.SUBMISSION_NOT_EXIST.exception();
     } else {
-      model.put("verdict", submission.getVerdict().toString());
+      model.put("submission", submission);
       model.put("message", Strings.nullToEmpty(submission.getMessage()));
-      model.put("source", submission.getSubmittedSrc());
     }
     UserRecord viewer = userProvider.get();
     if (!viewer.getId().equals(submission.getUserId())) {

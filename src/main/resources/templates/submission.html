@@ -3,7 +3,7 @@
 {% block content %}
 
 <script>
-{% if verdict == "PENDING" %}
+{% if submission.verdict == "PENDING" %}
     setTimeout(function() {
         location.reload();
     }, 2000);
@@ -16,13 +16,13 @@ $(document).ready(function() {
 <div class="content">
     <div class="card">
         <div class="card-title-container">
-            <span class="card-title">{{ verdict }}</span>
+            <span class="card-title">{{ submission.verdict }}</span>
         </div>
         {% if message is not empty %}
             <div class="card-content">
                 <pre>{{message}}</pre>
             </div>
-        {% elseif verdict == "PENDING" %}
+        {% elseif submission.verdict == "PENDING" %}
             <div class="card-content">
                 <div class="progress">
                     <div class="indeterminate"></div>
@@ -31,8 +31,9 @@ $(document).ready(function() {
         {% endif %}
     </div>
     <div class="editor">
-        <textarea id="solution-editor">{{source}}</textarea>
+        <textarea id="solution-editor">{{ submission.submittedSrc }}</textarea>
     </div>
+    <a href="/problem/{{ submission.problemId }}" class="waves-effect waves-light btn">problem</a>
 </div>
 {% endblock %}
 

@@ -66,6 +66,7 @@ public class BojServer {
   private final LeaderBoardRoute leaderBoardRoute;
   private final Provider<Boolean> isAdmin;
   private final PrefUpgrader prefUpgrader;
+  private final Provider<UserRecord> user;
 
   @Inject
   public BojServer(Flyway flyway,
@@ -84,7 +85,8 @@ public class BojServer {
                    RosterManager rosterManager,
                    LeaderBoardRoute leaderBoardRoute,
                    @IsAdmin Provider<Boolean> isAdmin,
-                   PrefUpgrader prefUpgrader) {
+                   PrefUpgrader prefUpgrader,
+                   Provider<UserRecord> user) {
     this.flyway = flyway;
     this.createOrUpdateProblemRoute = createOrUpdateProblemRoute;
     this.submitRoute = submitRoute;
@@ -102,6 +104,7 @@ public class BojServer {
     this.leaderBoardRoute = leaderBoardRoute;
     this.isAdmin = isAdmin;
     this.prefUpgrader = prefUpgrader;
+    this.user = user;
   }
 
   void start() {
@@ -192,10 +195,13 @@ public class BojServer {
       if (problemRecord == null) {
         throw BojErrorType.PROBLEM_NOT_EXIST.exception();
       }
+      SubmissionRecord lastSubmission = submissionManager.getLastSubmission(id, user.get().getId());
+      String sourceCode = lastSubmission == null ? problemRecord.getTemplateSrc() : lastSubmission.getSubmittedSrc();
       return modelAndViewFactory.create(
           MapBuilder.create()
               .put("problem", problemRecord)
               .put("isAdmin", isAdmin.get())
+              .put("source_code", sourceCode)
               .build(),
           "problem.html");
     }, engine);
