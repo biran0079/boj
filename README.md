@@ -8,7 +8,10 @@ maven 3.3.9
 
 ## How to run
 - `mkdir -p /data/boj` (only for the first time)
-- `./run`
+- `./start`
+
+## How to stop
+- `./stop`
 
 ## How to use
 Visit `localhost:8080`

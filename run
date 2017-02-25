@@ -1,4 +1,0 @@
-#!/bin/bash
-set -e
-mkdir -p ~/.boj/
-java -jar target/*-fat.jar 2>&1 | tee ~/.boj/log

@@ -98,6 +98,11 @@
 
     <dependencies>
         <dependency>
+            <groupId>com.typesafe</groupId>
+            <artifactId>config</artifactId>
+            <version>1.3.1</version>
+        </dependency>
+        <dependency>
             <groupId>com.google.inject.extensions</groupId>
             <artifactId>guice-multibindings</artifactId>
             <version>4.1.0</version>
@@ -173,7 +178,7 @@
 
     <groupId>laioffer</groupId>
     <artifactId>boj</artifactId>
-    <version>0.6.0</version>
+    <version>0.6.1</version>
 
 
 </project>

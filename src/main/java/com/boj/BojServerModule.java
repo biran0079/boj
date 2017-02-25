@@ -4,8 +4,8 @@ import com.boj.annotation.CheckstyleConfigPath;
 import com.boj.annotation.CheckstyleJarPath;
 import com.boj.annotation.IsAdmin;
 import com.boj.annotation.JunitClassPath;
-import com.boj.base.SessionKey;
 import com.boj.base.SessionKeys;
+import com.boj.base.Version;
 import com.boj.guice.RequestScope;
 import com.boj.guice.RequestScopeModule;
 import com.boj.jooq.tables.records.UserRecord;
@@ -18,12 +18,13 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.multibindings.Multibinder;
 import com.google.inject.servlet.RequestScoped;
+import com.typesafe.config.Config;
+import com.typesafe.config.ConfigFactory;
 import org.flywaydb.core.Flyway;
 import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
 import spark.Request;
-import spark.Session;
 
 import javax.inject.Singleton;
 import java.io.File;
@@ -35,7 +36,9 @@ import java.sql.SQLException;
  * Created by biran on 10/17/16.
  */
 public class BojServerModule extends AbstractModule {
-  private static final String DB_URL = "jdbc:sqlite:/data/boj/boj.db";
+
+  private static final Config CONFIG = ConfigFactory.load().getConfig("boj");
+  private static final String DB_URL = CONFIG.getString("db.url");
 
   @Override
   protected void configure() {
@@ -48,6 +51,7 @@ public class BojServerModule extends AbstractModule {
         .to(getPath("./checkstyle-7.1.2-all.jar"));
     bindConstant().annotatedWith(CheckstyleConfigPath.class)
         .to(getPath("./boj_check.xml"));
+    bindConstant().annotatedWith(Version.class).to(CONFIG.getString("version"));
 
     Multibinder problemSolvedListenerBinder = Multibinder.newSetBinder(binder(), ProblemSolvedListener.class);
     problemSolvedListenerBinder.addBinding().to(ProblemStatsManager.class);

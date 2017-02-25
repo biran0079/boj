@@ -1,0 +1,5 @@
+#!/bin/bash
+if [ -f ~/.boj/pid ]; then
+  kill -9 $(cat ~/.boj/pid) 2> /dev/null || true 
+  rm ~/.boj/pid
+fi

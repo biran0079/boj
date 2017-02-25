@@ -1,0 +1,6 @@
+#!/bin/bash
+set -e
+
+mkdir -p ~/.boj/
+java -Dboj.version=$(./version) -jar target/*-fat.jar 2>&1 > ~/.boj/log &
+echo $! > ~/.boj/pid

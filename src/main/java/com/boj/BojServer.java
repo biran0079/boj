@@ -67,6 +67,7 @@ public class BojServer {
   private final Provider<Boolean> isAdmin;
   private final PrefUpgrader prefUpgrader;
   private final Provider<UserRecord> user;
+  private final String version;
 
   @Inject
   public BojServer(Flyway flyway,
@@ -86,7 +87,8 @@ public class BojServer {
                    LeaderBoardRoute leaderBoardRoute,
                    @IsAdmin Provider<Boolean> isAdmin,
                    PrefUpgrader prefUpgrader,
-                   Provider<UserRecord> user) {
+                   Provider<UserRecord> user,
+                   @Version String version) {
     this.flyway = flyway;
     this.createOrUpdateProblemRoute = createOrUpdateProblemRoute;
     this.submitRoute = submitRoute;
@@ -105,6 +107,7 @@ public class BojServer {
     this.isAdmin = isAdmin;
     this.prefUpgrader = prefUpgrader;
     this.user = user;
+    this.version = version;
   }
 
   void start() {
@@ -136,6 +139,8 @@ public class BojServer {
     PebbleTemplateEngine engine = new PebbleTemplateEngine(loader);
 
     get("/", (req, resp) -> modelAndViewFactory.create(new HashMap<>(), "index.html"), engine);
+
+    get("/version", (req, resp) -> version);
 
     get("/leader_board", leaderBoardRoute, engine);
 
