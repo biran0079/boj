@@ -4,7 +4,7 @@ current_version=$(./version)
 tag_name=$(curl https://api.github.com/repos/biran0079/boj/releases/latest | python -c 'import json,sys; print json.load(sys.stdin)["tag_name"]')
 cd ~/
 if [ ! -d $tag_name ]; then
-  git clone git@github.com:biran0079/boj.git --depth 1 -b $tag_name $tag_name
+  git clone https://github.com/biran0079/boj.git --depth 1 -b $tag_name $tag_name
 fi
 cd $tag_name
 ./package
