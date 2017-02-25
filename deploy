@@ -10,3 +10,5 @@ cd $tag_name
 ./package
 ./stop
 ./start &
+
+ln -sf $(pwd)/deploy ~/.boj/deploy
