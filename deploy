@@ -1,7 +1,12 @@
 #!/bin/bash
 set -e
 current_version=$(./version)
-tag_name=$(curl https://api.github.com/repos/biran0079/boj/releases/latest | python -c 'import json,sys; print json.load(sys.stdin)["tag_name"]')
+if [ -z "$1" ]; then
+  tag_name=$1
+else
+  tag_name=$(curl https://api.github.com/repos/biran0079/boj/releases/latest | python -c 'import json,sys; print json.load(sys.stdin)["tag_name"]')
+fi
+echo $tag_name > ~/.boj/tag_name
 cd ~/
 if [ ! -d $tag_name ]; then
   git clone https://github.com/biran0079/boj.git --depth 1 -b $tag_name $tag_name

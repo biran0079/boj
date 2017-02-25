@@ -1,0 +1,12 @@
+#!/bin/bash
+set -e
+tag_name=$(curl https://api.github.com/repos/biran0079/boj/releases/latest | python -c 'import json,sys; print json.load(sys.stdin)["tag_name"]')
+if [ -f ~/.boj/tag_name ]; then
+  if [ $(cat ~/.boj/tag_name) == "$tag_name" ]; then
+    echo 'already running the latest version'
+    exit 0
+  fi
+fi
+~/.boj/deploy $tag_name
+
+ln -sf $(pwd)/refresh ~/.boj/refresh
