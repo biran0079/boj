@@ -22,7 +22,7 @@ import java.util.Arrays;
 public class UserAuthenticator {
 
   private static final Logger log = LoggerFactory.getLogger(UserAuthenticator.class);
-  private static final String CLIENT_ID = "496017852143-19a6kjh7mvhlhb0pp4l5fsj5s5empgt8.apps.googleusercontent.com";
+  private static final String CLIENT_ID = "1026335537092-3oqpj8tck2lqu7ts0vism5jts61v4ii6.apps.googleusercontent.com";
 
   private final GoogleIdTokenVerifier verifier =
       new GoogleIdTokenVerifier.Builder(new ApacheHttpTransport(), new JacksonFactory())
